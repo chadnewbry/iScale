@@ -9,4 +9,7 @@ struct AnalysisResult: Identifiable {
     let value: String
     let detail: String
     let aiExplanation: String
+
+    /// For Digital Scale mode: individual object weight estimates.
+    var weightEstimates: [WeightEstimate] = []
 }

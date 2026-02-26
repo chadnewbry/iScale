@@ -30,6 +30,13 @@ enum VisionServiceError: LocalizedError {
     }
 }
 
+/// A single object weight estimate parsed from the Vision API.
+struct ParsedWeightEstimate {
+    let name: String
+    let weight: String
+    let unit: String
+}
+
 /// Structured response from the Vision API, parsed per-mode.
 struct VisionAnalysis {
     let title: String
@@ -37,6 +44,9 @@ struct VisionAnalysis {
     let detail: String
     let explanation: String
     let raw: String
+
+    /// For Digital Scale mode: parsed individual object estimates.
+    var weightEstimates: [ParsedWeightEstimate] = []
 }
 
 /// Shared service for analyzing images via OpenAI's Vision API.
@@ -166,6 +176,37 @@ final class VisionService {
         // Try to parse as JSON first, fall back to raw text
         if let jsonData = content.data(using: .utf8),
            let parsed = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
+
+            // Digital Scale mode: parse multi-object response
+            if mode == .digitalScale, let objects = parsed["objects"] as? [[String: Any]] {
+                let estimates = objects.compactMap { obj -> ParsedWeightEstimate? in
+                    guard let name = obj["name"] as? String,
+                          let unit = obj["unit"] as? String else { return nil }
+                    // weight can be String or Number
+                    let weight: String
+                    if let w = obj["weight"] as? String {
+                        weight = w
+                    } else if let w = obj["weight"] as? NSNumber {
+                        weight = w.stringValue
+                    } else {
+                        return nil
+                    }
+                    return ParsedWeightEstimate(name: name, weight: weight, unit: unit)
+                }
+
+                let summary = estimates.map { "\($0.name): \($0.weight) \($0.unit)" }.joined(separator: ", ")
+                let explanation = parsed["explanation"] as? String ?? ""
+
+                return VisionAnalysis(
+                    title: estimates.first?.name ?? "Digital Scale",
+                    value: estimates.first.map { "\($0.weight) \($0.unit)" } ?? content,
+                    detail: estimates.count > 1 ? "\(estimates.count) objects detected" : "",
+                    explanation: explanation,
+                    raw: content,
+                    weightEstimates: estimates
+                )
+            }
+
             return VisionAnalysis(
                 title: parsed["title"] as? String ?? mode.rawValue,
                 value: parsed["value"] as? String ?? content,

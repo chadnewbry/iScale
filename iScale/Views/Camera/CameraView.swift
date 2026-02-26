@@ -126,7 +126,7 @@ struct CameraView: View {
             do {
                 let analysis = try await VisionService.shared.analyze(image: image, mode: currentMode)
                 await MainActor.run {
-                    analysisResult = AnalysisResult(
+                    var result = AnalysisResult(
                         mode: currentMode,
                         thumbnail: image,
                         title: analysis.title,
@@ -134,6 +134,13 @@ struct CameraView: View {
                         detail: analysis.detail,
                         aiExplanation: analysis.explanation
                     )
+                    // Attach weight estimates for Digital Scale mode
+                    if currentMode == .digitalScale {
+                        result.weightEstimates = analysis.weightEstimates.map {
+                            WeightEstimate(name: $0.name, weight: "\($0.weight) \($0.unit)", thumbnail: image)
+                        }
+                    }
+                    analysisResult = result
                     isAnalyzing = false
                     showResults = true
                 }
