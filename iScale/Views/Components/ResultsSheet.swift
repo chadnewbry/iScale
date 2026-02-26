@@ -33,6 +33,8 @@ struct ResultsSheet: View {
                         translateResults(translation)
                     } else if result.mode == .plantIdentifier && !result.plantIdentifications.isEmpty {
                         plantIdentifierResults
+                    } else if result.mode == .objectCounter && !result.objectCounts.isEmpty {
+                        objectCounterResults
                     } else {
                         genericResult
                     }
@@ -340,6 +342,71 @@ struct ResultsSheet: View {
         case "high": return .green
         case "medium": return .orange
         default: return .red
+        }
+    }
+
+    // MARK: - Object Counter Results
+
+    private var objectCounterResults: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(result.objectCounts) { object in
+                HStack(spacing: 16) {
+                    if let thumbnail = object.thumbnail {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(.systemGray5))
+                            .frame(width: 56, height: 56)
+                            .overlay(
+                                Image(systemName: "number.square.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.purple)
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(object.name)
+                            .font(.title3.bold())
+                        HStack(spacing: 8) {
+                            Text("×\(object.count)")
+                                .font(.title2.bold())
+                                .foregroundStyle(.purple)
+                            Text(object.category)
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Color.purple.opacity(0.12), in: Capsule())
+                                .foregroundStyle(.purple)
+                        }
+                    }
+
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+
+                if object.id != result.objectCounts.last?.id {
+                    Divider()
+                }
+            }
+
+            // Total count row
+            if result.objectCounts.count >= 1 {
+                Divider()
+                    .padding(.vertical, 4)
+
+                HStack {
+                    Text("Total Objects")
+                        .font(.subheadline.bold())
+                    Spacer()
+                    Text("\(result.totalObjectCount)")
+                        .font(.title.bold())
+                        .foregroundStyle(.purple)
+                }
+            }
         }
     }
 

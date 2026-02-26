@@ -61,6 +61,13 @@ struct ParsedTranslationResult {
     let translatedText: String
     let sourceLanguage: String
     let translationNotes: String
+/// A single object count parsed from the Vision API.
+struct ParsedObjectCount {
+    let name: String
+    let count: Int
+    let category: String
+}
+
 /// A single plant identification parsed from the Vision API.
 struct ParsedPlantIdentification {
     let commonName: String
@@ -90,6 +97,9 @@ struct VisionAnalysis {
     var translationResult: ParsedTranslationResult?
     /// For Plant Identifier mode: parsed individual plant identifications.
     var plantIdentifications: [ParsedPlantIdentification] = []
+
+    /// For Object Counter mode: parsed individual object counts.
+    var objectCounts: [ParsedObjectCount] = []
 }
 
 /// Shared service for analyzing images via OpenAI's Vision API.
@@ -345,6 +355,28 @@ final class VisionService {
                     explanation: explanation,
                     raw: content,
                     plantIdentifications: identifications
+                )
+            }
+
+            // Object Counter mode: parse multi-object count response
+            if mode == .objectCounter, let objects = parsed["objects"] as? [[String: Any]] {
+                let counts = objects.compactMap { obj -> ParsedObjectCount? in
+                    guard let name = obj["name"] as? String else { return nil }
+                    let count = (obj["count"] as? NSNumber)?.intValue ?? 1
+                    let category = obj["category"] as? String ?? "Other"
+                    return ParsedObjectCount(name: name, count: count, category: category)
+                }
+
+                let totalCount = counts.reduce(0) { $0 + $1.count }
+                let explanation = parsed["explanation"] as? String ?? ""
+
+                return VisionAnalysis(
+                    title: counts.first?.name ?? "Object Counter",
+                    value: "\(totalCount) object\(totalCount == 1 ? "" : "s")",
+                    detail: counts.count > 1 ? "\(counts.count) types detected" : "",
+                    explanation: explanation,
+                    raw: content,
+                    objectCounts: counts
                 )
             }
 

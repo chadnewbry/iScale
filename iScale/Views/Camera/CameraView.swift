@@ -158,6 +158,12 @@ struct CameraView: View {
                             DimensionEstimate(name: $0.name, length: $0.length, width: $0.width, height: $0.height, unit: $0.unit, thumbnail: image)
                         }
                     }
+                    // Attach object counts for Object Counter mode
+                    if currentMode == .objectCounter {
+                        result.objectCounts = analysis.objectCounts.map {
+                            ObjectCount(name: $0.name, count: $0.count, category: $0.category, thumbnail: image)
+                        }
+                    }
                     // Attach translation result for Translate mode
                     if currentMode == .translate, let parsed = analysis.translationResult {
                         result.translationResult = TranslationResult(
