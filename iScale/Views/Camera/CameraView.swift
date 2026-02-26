@@ -122,19 +122,34 @@ struct CameraView: View {
 
         Task {
             let image = cameraManager.capturePhoto()
-            let resultText = await VisionService.shared.analyzeImage(image, mode: currentMode)
 
-            await MainActor.run {
-                analysisResult = AnalysisResult(
-                    mode: currentMode,
-                    thumbnail: image,
-                    title: currentMode.rawValue,
-                    value: resultText,
-                    detail: "",
-                    aiExplanation: "AI analysis will appear here once the Vision API is configured."
-                )
-                isAnalyzing = false
-                showResults = true
+            do {
+                let analysis = try await VisionService.shared.analyze(image: image, mode: currentMode)
+                await MainActor.run {
+                    analysisResult = AnalysisResult(
+                        mode: currentMode,
+                        thumbnail: image,
+                        title: analysis.title,
+                        value: analysis.value,
+                        detail: analysis.detail,
+                        aiExplanation: analysis.explanation
+                    )
+                    isAnalyzing = false
+                    showResults = true
+                }
+            } catch {
+                await MainActor.run {
+                    analysisResult = AnalysisResult(
+                        mode: currentMode,
+                        thumbnail: image,
+                        title: currentMode.rawValue,
+                        value: "⚠️ \(error.localizedDescription)",
+                        detail: "",
+                        aiExplanation: ""
+                    )
+                    isAnalyzing = false
+                    showResults = true
+                }
             }
         }
     }

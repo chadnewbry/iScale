@@ -34,14 +34,38 @@ enum AppMode: String, CaseIterable, Identifiable {
     }
 
     /// System prompt hint for the Vision API (stub).
-    var analysisPrompt: String {
+    var analysisPrompt: String { systemPrompt }
+
+    /// System prompt sent to the Vision API.
+    var systemPrompt: String {
+        let jsonFormat = """
+        Respond ONLY with a JSON object: {"title":"<short label>","value":"<primary result>","detail":"<secondary info>","explanation":"<brief reasoning>"}
+        """
         switch self {
-        case .digitalScale: return "Estimate the weight of the object in the image."
-        case .tapeMeasure: return "Estimate the dimensions of the object in the image."
-        case .calorieCounter: return "Estimate the calories in the food shown."
-        case .plantIdentifier: return "Identify the plant species in the image."
-        case .translate: return "Translate any text visible in the image."
-        case .objectCounter: return "Count the objects in the image."
+        case .digitalScale:
+            return "You are a weight estimation expert. Estimate the weight of the main object in the image. Use grams for small items, kilograms for larger ones. \(jsonFormat)"
+        case .tapeMeasure:
+            return "You are a measurement expert. Estimate the dimensions (length, width, height) of the main object in the image. Use cm or m as appropriate. \(jsonFormat)"
+        case .calorieCounter:
+            return "You are a nutrition expert. Identify the food in the image and estimate total calories, protein, carbs, and fat. \(jsonFormat)"
+        case .plantIdentifier:
+            return "You are a botanist. Identify the plant species in the image. Include common name, scientific name, and care tips. \(jsonFormat)"
+        case .translate:
+            return "You are a translator. Find and translate all visible text in the image to English. If already English, note the language. \(jsonFormat)"
+        case .objectCounter:
+            return "You are an object counting expert. Count the distinct objects in the image. Group by type if there are multiple categories. \(jsonFormat)"
+        }
+    }
+
+    /// User-facing prompt sent alongside the image.
+    var userPrompt: String {
+        switch self {
+        case .digitalScale: return "What does this weigh? Estimate the weight."
+        case .tapeMeasure: return "What are the dimensions of this object?"
+        case .calorieCounter: return "How many calories are in this food?"
+        case .plantIdentifier: return "What plant is this?"
+        case .translate: return "Translate the text in this image."
+        case .objectCounter: return "How many objects are in this image?"
         }
     }
 }
