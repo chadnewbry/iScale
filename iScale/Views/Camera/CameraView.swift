@@ -83,16 +83,7 @@ struct CameraView: View {
                     .background(.ultraThinMaterial, in: Circle())
             }
 
-            // Settings (navigates to settings tab — stub)
-            Button {
-                // Placeholder: settings accessed from tab bar
-            } label: {
-                Image(systemName: "gearshape.fill")
-                    .font(.title3)
-                    .foregroundStyle(.white)
-                    .frame(width: 40, height: 40)
-                    .background(.ultraThinMaterial, in: Circle())
-            }
+
         }
     }
 
