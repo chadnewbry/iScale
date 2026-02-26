@@ -9,12 +9,13 @@ final class VisionService {
 
     private init() {}
 
-    /// Analyze an image and return a description or measurement result.
-    func analyzeImage(_ image: UIImage) async -> String {
+    /// Analyze an image for the given mode and return a result string.
+    func analyzeImage(_ image: UIImage?, mode: AppMode = .digitalScale) async -> String {
         // TODO: Implement actual OpenAI Vision API call
         // 1. Convert image to base64
         // 2. Send to /v1/chat/completions with vision model
-        // 3. Parse response for weight/scale reading
+        // 3. Use mode.analysisPrompt as system prompt
+        // 4. Parse response
 
         // Stub delay to simulate network call
         try? await Task.sleep(for: .seconds(1))

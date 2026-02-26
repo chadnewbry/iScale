@@ -6,6 +6,9 @@ final class CameraManager: ObservableObject {
     let session = AVCaptureSession()
     private var photoOutput = AVCapturePhotoOutput()
     private var isConfigured = false
+    private var device: AVCaptureDevice?
+
+    @Published var isFlashOn = false
 
     func start() {
         guard !isConfigured else {
@@ -23,17 +26,26 @@ final class CameraManager: ObservableObject {
         }
     }
 
+    func toggleFlash() {
+        guard let device, device.hasTorch else { return }
+        isFlashOn.toggle()
+        try? device.lockForConfiguration()
+        device.torchMode = isFlashOn ? .on : .off
+        device.unlockForConfiguration()
+    }
+
     func capturePhoto() -> UIImage? {
         // TODO: Implement actual photo capture via AVCapturePhotoCaptureDelegate
-        // For now, return a placeholder
+        // For now, return nil (stub)
         return nil
     }
 
     private func configure() {
-        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
-              let input = try? AVCaptureDeviceInput(device: device) else {
+        guard let cam = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
+              let input = try? AVCaptureDeviceInput(device: cam) else {
             return
         }
+        self.device = cam
 
         session.beginConfiguration()
         session.sessionPreset = .photo
