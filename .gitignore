@@ -7,7 +7,6 @@ xcuserdata/
 *.moved-aside
 *.xcuserstate
 *.xcscmblueprint
-*.xcscheme
 
 # Build
 build/
