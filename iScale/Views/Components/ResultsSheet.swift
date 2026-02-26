@@ -272,6 +272,10 @@ struct ResultsSheet: View {
                     .padding(.vertical, 12)
                     .background(AppMode.translate.color, in: RoundedRectangle(cornerRadius: 12))
                     .foregroundStyle(.white)
+            }
+        }
+    }
+
     // MARK: - Plant Identifier Results
 
     private var plantIdentifierResults: some View {

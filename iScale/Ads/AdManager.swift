@@ -9,7 +9,7 @@ final class AdManager: NSObject {
     let bannerAdUnitID = "ca-app-pub-3940256099942544/2435281174"
     let interstitialAdUnitID = "ca-app-pub-3940256099942544/4411468910"
 
-    private var interstitialAd: InterstitialAd?
+    private var interstitialAd: GADInterstitialAd?
 
     private override init() {
         super.init()
@@ -17,7 +17,7 @@ final class AdManager: NSObject {
 
     /// Call from app launch to initialize the ads SDK.
     func configure() {
-        MobileAds.shared.start()
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
         Task { await loadInterstitial() }
     }
 
@@ -25,7 +25,7 @@ final class AdManager: NSObject {
 
     func loadInterstitial() async {
         do {
-            interstitialAd = try await InterstitialAd.load(with: interstitialAdUnitID)
+            interstitialAd = try await GADInterstitialAd.load(withAdUnitID: interstitialAdUnitID, request: GADRequest())
         } catch {
             print("Failed to load interstitial: \(error)")
         }
@@ -41,7 +41,7 @@ final class AdManager: NSObject {
 
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let root = windowScene.windows.first?.rootViewController {
-            ad.present(from: root)
+            ad.present(fromRootViewController: root)
         }
 
         // Preload next one

@@ -61,6 +61,8 @@ struct ParsedTranslationResult {
     let translatedText: String
     let sourceLanguage: String
     let translationNotes: String
+}
+
 /// A single object count parsed from the Vision API.
 struct ParsedObjectCount {
     let name: String
@@ -336,6 +338,9 @@ final class VisionService {
                     explanation: notes,
                     raw: content,
                     translationResult: result
+                )
+            }
+
             // Plant Identifier mode: parse multi-plant response
             if mode == .plantIdentifier, let plants = parsed["plants"] as? [[String: Any]] {
                 let identifications = plants.compactMap { plant -> ParsedPlantIdentification? in

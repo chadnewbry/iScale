@@ -38,9 +38,6 @@ enum AppMode: String, CaseIterable, Identifiable {
 
     /// System prompt sent to the Vision API.
     var systemPrompt: String {
-        let jsonFormat = """
-        Respond ONLY with a JSON object: {"title":"<short label>","value":"<primary result>","detail":"<secondary info>","explanation":"<brief reasoning>"}
-        """
         switch self {
         case .digitalScale:
             return digitalScaleSystemPrompt
@@ -63,10 +60,8 @@ enum AppMode: String, CaseIterable, Identifiable {
         case .digitalScale: return digitalScaleUserPrompt
         case .tapeMeasure: return tapeMeasureUserPrompt
         case .calorieCounter: return "Identify all food items in this image. For each item, estimate the portion size, calories, and macronutrients (protein, carbs, fat)."
-        case .plantIdentifier: return "What plant is this?"
-        case .translate: return "Extract all visible text from this image, detect the source language, and translate it to \(deviceLanguage)."
         case .plantIdentifier: return "Identify all plants visible in this image. For each plant, provide the common name, scientific name, a brief description with care tips or interesting facts, and your confidence level."
-        case .translate: return "Translate the text in this image."
+        case .translate: return "Extract all visible text from this image, detect the source language, and translate it to \(deviceLanguage)."
         case .objectCounter: return "Identify and count all distinct objects in this image. Group them by type and categorize each one."
         }
     }
@@ -121,6 +116,9 @@ enum AppMode: String, CaseIterable, Identifiable {
 
         Respond ONLY with a JSON object in this exact format:
         {"translatedText":"<full translated text>","sourceLanguage":"<detected language name>","translationNotes":"<any notes about the translation, idioms, or context>"}
+        """
+    }
+
     private var plantIdentifierSystemPrompt: String {
         """
         You are an expert botanist. Identify ALL distinct plant species visible in the image. For each plant, provide the common name, scientific name, a brief description with care tips or interesting facts, and your confidence level (high, medium, or low).
