@@ -43,7 +43,7 @@ enum AppMode: String, CaseIterable, Identifiable {
         """
         switch self {
         case .digitalScale:
-            return "You are a weight estimation expert. Estimate the weight of the main object in the image. Use grams for small items, kilograms for larger ones. \(jsonFormat)"
+            return digitalScaleSystemPrompt
         case .tapeMeasure:
             return "You are a measurement expert. Estimate the dimensions (length, width, height) of the main object in the image. Use cm or m as appropriate. \(jsonFormat)"
         case .calorieCounter:
@@ -60,12 +60,34 @@ enum AppMode: String, CaseIterable, Identifiable {
     /// User-facing prompt sent alongside the image.
     var userPrompt: String {
         switch self {
-        case .digitalScale: return "What does this weigh? Estimate the weight."
+        case .digitalScale: return digitalScaleUserPrompt
         case .tapeMeasure: return "What are the dimensions of this object?"
         case .calorieCounter: return "How many calories are in this food?"
         case .plantIdentifier: return "What plant is this?"
         case .translate: return "Translate the text in this image."
         case .objectCounter: return "How many objects are in this image?"
         }
+    }
+
+    // MARK: - Digital Scale Prompts
+
+    private var preferredUnits: String {
+        let system = UserDefaults.standard.string(forKey: AppSettings.Keys.unitSystem) ?? AppSettings.Defaults.unitSystem
+        return system == "metric" ? "grams and kilograms" : "ounces and pounds"
+    }
+
+    private var digitalScaleSystemPrompt: String {
+        """
+        You are a weight estimation expert. Identify ALL distinct objects in the image and estimate the weight of each one based on its apparent size, known average weights, and visual cues like volume and density.
+
+        Use \(preferredUnits) for all weights. Use the smaller unit (grams or ounces) for items under 1 kg/2.2 lbs.
+
+        Respond ONLY with a JSON object in this exact format:
+        {"objects":[{"name":"<object name>","weight":"<number>","unit":"<g|kg|oz|lbs>"}],"explanation":"<detailed reasoning about how you estimated the weights, referencing volume, density, and known averages>"}
+        """
+    }
+
+    private var digitalScaleUserPrompt: String {
+        "Identify all objects in this image and estimate the weight of each one. Use \(preferredUnits)."
     }
 }
