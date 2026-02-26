@@ -2,84 +2,139 @@ import SwiftUI
 
 struct CameraView: View {
     @StateObject private var cameraManager = CameraManager()
-    @State private var capturedImage: UIImage?
-    @State private var analysisResult: String?
+    @State private var currentMode: AppMode = .digitalScale
+    @State private var showModePicker = false
+    @State private var analysisResult: AnalysisResult?
+    @State private var showResults = false
     @State private var isAnalyzing = false
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color.black.ignoresSafeArea()
+        ZStack {
+            // Full-screen camera preview
+            CameraPreviewView(cameraManager: cameraManager)
+                .ignoresSafeArea()
 
-                VStack(spacing: 0) {
-                    // Camera preview
-                    CameraPreviewView(cameraManager: cameraManager)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .clipped()
+            // Gradient overlays for readability
+            VStack {
+                LinearGradient(colors: [.black.opacity(0.5), .clear], startPoint: .top, endPoint: .bottom)
+                    .frame(height: 120)
+                Spacer()
+                LinearGradient(colors: [.clear, .black.opacity(0.6)], startPoint: .top, endPoint: .bottom)
+                    .frame(height: 200)
+            }
+            .ignoresSafeArea()
 
-                    // Result overlay
-                    if let result = analysisResult {
-                        Text(result)
-                            .font(.title2.bold())
-                            .foregroundStyle(.white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(.black.opacity(0.8))
-                    }
+            // Main UI overlay
+            VStack {
+                // Top bar
+                topBar
+                    .padding(.horizontal)
+                    .padding(.top, 8)
 
-                    // Capture button
-                    Button {
-                        captureAndAnalyze()
-                    } label: {
-                        Circle()
-                            .fill(.white)
-                            .frame(width: 72, height: 72)
-                            .overlay(
-                                Circle()
-                                    .stroke(.black.opacity(0.2), lineWidth: 3)
-                                    .frame(width: 62, height: 62)
-                            )
-                    }
-                    .padding(.vertical, 24)
-                    .disabled(isAnalyzing)
-                    .opacity(isAnalyzing ? 0.5 : 1.0)
+                Spacer()
 
-                    // Ad banner placeholder
-                    BannerAdView()
-                        .frame(height: 50)
+                // Capture button
+                captureButton
+                    .padding(.bottom, 16)
+
+                // Ad banner
+                BannerAdView()
+                    .frame(height: 50)
+            }
+        }
+        .sheet(isPresented: $showModePicker) {
+            ModePickerSheet(selectedMode: $currentMode)
+        }
+        .sheet(isPresented: $showResults) {
+            if let result = analysisResult {
+                ResultsSheet(result: result) {
+                    showResults = false
+                    analysisResult = nil
                 }
             }
-            .navigationTitle("iScale")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarColorScheme(.dark, for: .navigationBar)
-            .toolbarBackground(.black, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
         }
-        .onAppear {
-            cameraManager.start()
-        }
-        .onDisappear {
-            cameraManager.stop()
+        .onAppear { cameraManager.start() }
+        .onDisappear { cameraManager.stop() }
+    }
+
+    // MARK: - Top Bar
+
+    private var topBar: some View {
+        HStack {
+            ModePillView(mode: currentMode) {
+                showModePicker = true
+            }
+
+            Spacer()
+
+            // Flash toggle
+            Button {
+                cameraManager.toggleFlash()
+            } label: {
+                Image(systemName: cameraManager.isFlashOn ? "bolt.fill" : "bolt.slash.fill")
+                    .font(.title3)
+                    .foregroundStyle(.white)
+                    .frame(width: 40, height: 40)
+                    .background(.ultraThinMaterial, in: Circle())
+            }
+
+            // Settings (navigates to settings tab — stub)
+            Button {
+                // Placeholder: settings accessed from tab bar
+            } label: {
+                Image(systemName: "gearshape.fill")
+                    .font(.title3)
+                    .foregroundStyle(.white)
+                    .frame(width: 40, height: 40)
+                    .background(.ultraThinMaterial, in: Circle())
+            }
         }
     }
 
+    // MARK: - Capture Button
+
+    private var captureButton: some View {
+        Button {
+            captureAndAnalyze()
+        } label: {
+            ZStack {
+                Circle()
+                    .stroke(.white, lineWidth: 4)
+                    .frame(width: 80, height: 80)
+
+                Circle()
+                    .fill(.white)
+                    .frame(width: 66, height: 66)
+
+                if isAnalyzing {
+                    ProgressView()
+                        .tint(.black)
+                }
+            }
+        }
+        .disabled(isAnalyzing)
+    }
+
+    // MARK: - Capture & Analyze
+
     private func captureAndAnalyze() {
         isAnalyzing = true
-        analysisResult = nil
 
         Task {
-            if let image = cameraManager.capturePhoto() {
-                capturedImage = image
-                let result = await VisionService.shared.analyzeImage(image)
-                await MainActor.run {
-                    analysisResult = result
-                    isAnalyzing = false
-                }
-            } else {
-                await MainActor.run {
-                    analysisResult = "Failed to capture image"
-                    isAnalyzing = false
-                }
+            let image = cameraManager.capturePhoto()
+            let resultText = await VisionService.shared.analyzeImage(image, mode: currentMode)
+
+            await MainActor.run {
+                analysisResult = AnalysisResult(
+                    mode: currentMode,
+                    thumbnail: image,
+                    title: currentMode.rawValue,
+                    value: resultText,
+                    detail: "",
+                    aiExplanation: "AI analysis will appear here once the Vision API is configured."
+                )
+                isAnalyzing = false
+                showResults = true
             }
         }
     }
