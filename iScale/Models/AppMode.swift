@@ -51,7 +51,7 @@ enum AppMode: String, CaseIterable, Identifiable {
         case .plantIdentifier:
             return plantIdentifierSystemPrompt
         case .translate:
-            return "You are a translator. Find and translate all visible text in the image to English. If already English, note the language. \(jsonFormat)"
+            return translateSystemPrompt
         case .objectCounter:
             return "You are an object counting expert. Count the distinct objects in the image. Group by type if there are multiple categories. \(jsonFormat)"
         }
@@ -63,6 +63,8 @@ enum AppMode: String, CaseIterable, Identifiable {
         case .digitalScale: return digitalScaleUserPrompt
         case .tapeMeasure: return tapeMeasureUserPrompt
         case .calorieCounter: return "Identify all food items in this image. For each item, estimate the portion size, calories, and macronutrients (protein, carbs, fat)."
+        case .plantIdentifier: return "What plant is this?"
+        case .translate: return "Extract all visible text from this image, detect the source language, and translate it to \(deviceLanguage)."
         case .plantIdentifier: return "Identify all plants visible in this image. For each plant, provide the common name, scientific name, a brief description with care tips or interesting facts, and your confidence level."
         case .translate: return "Translate the text in this image."
         case .objectCounter: return "How many objects are in this image?"
@@ -107,6 +109,18 @@ enum AppMode: String, CaseIterable, Identifiable {
         """
     }
 
+    // MARK: - Translate Prompts
+
+    private var deviceLanguage: String {
+        Locale.current.language.languageCode.flatMap { Locale.current.localizedString(forLanguageCode: $0.identifier) } ?? "English"
+    }
+
+    private var translateSystemPrompt: String {
+        """
+        You are an OCR and translation expert. Extract ALL visible text from the image, detect the source language, and translate it to \(deviceLanguage).
+
+        Respond ONLY with a JSON object in this exact format:
+        {"translatedText":"<full translated text>","sourceLanguage":"<detected language name>","translationNotes":"<any notes about the translation, idioms, or context>"}
     private var plantIdentifierSystemPrompt: String {
         """
         You are an expert botanist. Identify ALL distinct plant species visible in the image. For each plant, provide the common name, scientific name, a brief description with care tips or interesting facts, and your confidence level (high, medium, or low).

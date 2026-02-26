@@ -19,6 +19,8 @@ struct AnalysisResult: Identifiable {
     /// For Calorie Counter mode: individual food item calorie estimates.
     var calorieEstimates: [CalorieEstimate] = []
 
+    /// For Translate mode: translation result.
+    var translationResult: TranslationResult?
     /// For Plant Identifier mode: individual plant identifications.
     var plantIdentifications: [PlantIdentification] = []
 
