@@ -12,4 +12,7 @@ struct AnalysisResult: Identifiable {
 
     /// For Digital Scale mode: individual object weight estimates.
     var weightEstimates: [WeightEstimate] = []
+
+    /// For Tape Measure mode: individual object dimension estimates.
+    var dimensionEstimates: [DimensionEstimate] = []
 }

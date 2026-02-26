@@ -25,6 +25,8 @@ struct ResultsSheet: View {
                 VStack(alignment: .leading, spacing: 16) {
                     if result.mode == .digitalScale && !result.weightEstimates.isEmpty {
                         digitalScaleResults
+                    } else if result.mode == .tapeMeasure && !result.dimensionEstimates.isEmpty {
+                        tapeMeasureResults
                     } else {
                         genericResult
                     }
@@ -82,6 +84,63 @@ struct ResultsSheet: View {
                     Divider()
                 }
             }
+        }
+    }
+
+    // MARK: - Tape Measure Multi-Object Results
+
+    private var tapeMeasureResults: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(result.dimensionEstimates) { estimate in
+                HStack(spacing: 16) {
+                    if let thumbnail = estimate.thumbnail {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(.systemGray5))
+                            .frame(width: 56, height: 56)
+                            .overlay(
+                                Image(systemName: "ruler.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.secondary)
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(estimate.name)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text(estimate.formattedDimensions)
+                            .font(.title3.bold())
+                        HStack(spacing: 12) {
+                            dimensionLabel("L", value: estimate.length, unit: estimate.unit)
+                            dimensionLabel("W", value: estimate.width, unit: estimate.unit)
+                            dimensionLabel("H", value: estimate.height, unit: estimate.unit)
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+
+                if estimate.id != result.dimensionEstimates.last?.id {
+                    Divider()
+                }
+            }
+        }
+    }
+
+    private func dimensionLabel(_ label: String, value: String, unit: String) -> some View {
+        HStack(spacing: 2) {
+            Text(label)
+                .fontWeight(.semibold)
+            Text("\(value) \(unit)")
         }
     }
 
