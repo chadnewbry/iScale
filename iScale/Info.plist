@@ -6,6 +6,8 @@
 	<string>iScale - AI Scale</string>
 	<key>NSCameraUsageDescription</key>
 	<string>iScale needs camera access to photograph items for weight estimation.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This allows iScale to show you more relevant ads and helps support the app.</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>SKAdNetworkItems</key>

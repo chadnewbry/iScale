@@ -1,3 +1,4 @@
+import AppTrackingTransparency
 import GoogleMobileAds
 import Observation
 import UIKit
@@ -6,6 +7,8 @@ import UIKit
 final class AdManager: NSObject {
     static let shared = AdManager()
 
+    // MARK: - Ad Unit IDs
+    // TODO: Replace with production ad unit IDs from AdMob dashboard before release
     let bannerAdUnitID = "ca-app-pub-3940256099942544/2435281174"
     let interstitialAdUnitID = "ca-app-pub-3940256099942544/4411468910"
 
@@ -15,10 +18,22 @@ final class AdManager: NSObject {
         super.init()
     }
 
-    /// Call from app launch to initialize the ads SDK.
+    /// Call from app launch to initialize the ads SDK and request ATT.
     func configure() {
         GADMobileAds.sharedInstance().start(completionHandler: nil)
+        requestTrackingAuthorization()
         Task { await loadInterstitial() }
+    }
+
+    // MARK: - App Tracking Transparency
+
+    private func requestTrackingAuthorization() {
+        // ATT must be requested after the app becomes active and the UI is visible.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                print("ATT status: \(status.rawValue)")
+            }
+        }
     }
 
     // MARK: - Interstitial
