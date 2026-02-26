@@ -3,7 +3,7 @@ import SwiftUI
 struct ScaleView: View {
     @ObservedObject private var settings = SettingsManager.shared
     @State private var weight: Double = 0.0
-    @State private var showSettings = false
+
 
     private var unit: String {
         settings.unitSystem == .metric ? "g" : "oz"
@@ -63,19 +63,6 @@ struct ScaleView: View {
             .padding(.bottom, 40)
         }
         .navigationTitle("iScale")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showSettings = true
-                } label: {
-                    Image(systemName: "gearshape")
-                        .font(.title3)
-                }
-            }
-        }
-        .fullScreenCover(isPresented: $showSettings) {
-            SettingsView()
-        }
     }
 }
 
