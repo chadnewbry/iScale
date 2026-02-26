@@ -53,7 +53,7 @@ enum AppMode: String, CaseIterable, Identifiable {
         case .translate:
             return translateSystemPrompt
         case .objectCounter:
-            return "You are an object counting expert. Count the distinct objects in the image. Group by type if there are multiple categories. \(jsonFormat)"
+            return objectCounterSystemPrompt
         }
     }
 
@@ -67,7 +67,7 @@ enum AppMode: String, CaseIterable, Identifiable {
         case .translate: return "Extract all visible text from this image, detect the source language, and translate it to \(deviceLanguage)."
         case .plantIdentifier: return "Identify all plants visible in this image. For each plant, provide the common name, scientific name, a brief description with care tips or interesting facts, and your confidence level."
         case .translate: return "Translate the text in this image."
-        case .objectCounter: return "How many objects are in this image?"
+        case .objectCounter: return "Identify and count all distinct objects in this image. Group them by type and categorize each one."
         }
     }
 
@@ -143,5 +143,16 @@ enum AppMode: String, CaseIterable, Identifiable {
 
     private var digitalScaleUserPrompt: String {
         "Identify all objects in this image and estimate the weight of each one. Use \(preferredUnits)."
+    }
+
+    // MARK: - Object Counter Prompts
+
+    private var objectCounterSystemPrompt: String {
+        """
+        You are an object counting and identification expert. Identify ALL distinct objects in the image, count how many of each type are present, and assign a category to each.
+
+        Respond ONLY with a JSON object in this exact format:
+        {"objects":[{"name":"<object name>","count":<number>,"category":"<category like Food, Electronics, Furniture, etc.>"}],"explanation":"<detailed description of the scene and how you identified and counted the objects>"}
+        """
     }
 }

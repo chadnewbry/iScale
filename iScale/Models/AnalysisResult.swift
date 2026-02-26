@@ -24,6 +24,12 @@ struct AnalysisResult: Identifiable {
     /// For Plant Identifier mode: individual plant identifications.
     var plantIdentifications: [PlantIdentification] = []
 
+    /// For Object Counter mode: individual object counts.
+    var objectCounts: [ObjectCount] = []
+
+    /// Total objects counted across all types.
+    var totalObjectCount: Int { objectCounts.reduce(0) { $0 + $1.count } }
+
     /// Total calories across all food items.
     var totalCalories: Int { calorieEstimates.reduce(0) { $0 + $1.calories } }
     var totalProtein: Double { calorieEstimates.reduce(0) { $0 + $1.protein } }
