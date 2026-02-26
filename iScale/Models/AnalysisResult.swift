@@ -19,6 +19,9 @@ struct AnalysisResult: Identifiable {
     /// For Calorie Counter mode: individual food item calorie estimates.
     var calorieEstimates: [CalorieEstimate] = []
 
+    /// For Plant Identifier mode: individual plant identifications.
+    var plantIdentifications: [PlantIdentification] = []
+
     /// Total calories across all food items.
     var totalCalories: Int { calorieEstimates.reduce(0) { $0 + $1.calories } }
     var totalProtein: Double { calorieEstimates.reduce(0) { $0 + $1.protein } }

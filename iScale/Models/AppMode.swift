@@ -49,7 +49,7 @@ enum AppMode: String, CaseIterable, Identifiable {
         case .calorieCounter:
             return calorieCounterSystemPrompt
         case .plantIdentifier:
-            return "You are a botanist. Identify the plant species in the image. Include common name, scientific name, and care tips. \(jsonFormat)"
+            return plantIdentifierSystemPrompt
         case .translate:
             return "You are a translator. Find and translate all visible text in the image to English. If already English, note the language. \(jsonFormat)"
         case .objectCounter:
@@ -63,7 +63,7 @@ enum AppMode: String, CaseIterable, Identifiable {
         case .digitalScale: return digitalScaleUserPrompt
         case .tapeMeasure: return tapeMeasureUserPrompt
         case .calorieCounter: return "Identify all food items in this image. For each item, estimate the portion size, calories, and macronutrients (protein, carbs, fat)."
-        case .plantIdentifier: return "What plant is this?"
+        case .plantIdentifier: return "Identify all plants visible in this image. For each plant, provide the common name, scientific name, a brief description with care tips or interesting facts, and your confidence level."
         case .translate: return "Translate the text in this image."
         case .objectCounter: return "How many objects are in this image?"
         }
@@ -104,6 +104,15 @@ enum AppMode: String, CaseIterable, Identifiable {
 
         Respond ONLY with a JSON object in this exact format:
         {"items":[{"name":"<food item name>","portion":"<estimated portion size>","calories":<number>,"protein":<number>,"carbs":<number>,"fat":<number>}],"explanation":"<detailed reasoning about how you identified the food items and estimated portion sizes, referencing visual cues like plate size, utensil comparison, food density, and typical serving sizes>"}
+        """
+    }
+
+    private var plantIdentifierSystemPrompt: String {
+        """
+        You are an expert botanist. Identify ALL distinct plant species visible in the image. For each plant, provide the common name, scientific name, a brief description with care tips or interesting facts, and your confidence level (high, medium, or low).
+
+        Respond ONLY with a JSON object in this exact format:
+        {"plants":[{"commonName":"<common name>","scientificName":"<scientific name>","description":"<brief care tips or interesting facts>","confidence":"<high|medium|low>"}],"explanation":"<detailed reasoning about how you identified each plant, referencing leaf shape, flower color, growth pattern, and other visual cues>"}
         """
     }
 
