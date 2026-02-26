@@ -1,8 +1,17 @@
 import SwiftUI
 
 struct ScaleView: View {
+    @ObservedObject private var settings = SettingsManager.shared
     @State private var weight: Double = 0.0
-    @State private var unit: String = "g"
+    @State private var showSettings = false
+
+    private var unit: String {
+        settings.unitSystem == .metric ? "g" : "oz"
+    }
+
+    private var displayWeight: Double {
+        settings.unitSystem == .imperial ? weight * 0.035274 : weight
+    }
 
     var body: some View {
         VStack(spacing: 32) {
@@ -10,7 +19,7 @@ struct ScaleView: View {
 
             // Weight display
             VStack(spacing: 8) {
-                Text(String(format: "%.1f", weight))
+                Text(String(format: "%.1f", displayWeight))
                     .font(.system(size: 72, weight: .thin, design: .rounded))
                     .monospacedDigit()
 
@@ -40,7 +49,7 @@ struct ScaleView: View {
                 }
 
                 Button {
-                    unit = unit == "g" ? "oz" : "g"
+                    settings.unitSystem = settings.unitSystem == .metric ? .imperial : .metric
                 } label: {
                     Label("Unit", systemImage: "arrow.triangle.2.circlepath")
                         .font(.headline)
@@ -54,6 +63,19 @@ struct ScaleView: View {
             .padding(.bottom, 40)
         }
         .navigationTitle("iScale")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showSettings = true
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(.title3)
+                }
+            }
+        }
+        .fullScreenCover(isPresented: $showSettings) {
+            SettingsView()
+        }
     }
 }
 

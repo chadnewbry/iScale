@@ -4,7 +4,9 @@ import SwiftUI
 struct iScaleApp: App {
     var body: some Scene {
         WindowGroup {
-            ScaleView()
+            NavigationStack {
+                ScaleView()
+            }
         }
     }
 }
