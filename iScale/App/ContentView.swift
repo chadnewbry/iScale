@@ -25,7 +25,7 @@ struct ContentView: View {
                     }
                     .tag(AppTab.settings)
             }
-            .tint(.black)
+            .tint(.white)
         } else {
             UnitPickerOnboardingView()
         }
