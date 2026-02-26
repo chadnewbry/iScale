@@ -140,6 +140,12 @@ struct CameraView: View {
                             WeightEstimate(name: $0.name, weight: "\($0.weight) \($0.unit)", thumbnail: image)
                         }
                     }
+                    // Attach dimension estimates for Tape Measure mode
+                    if currentMode == .tapeMeasure {
+                        result.dimensionEstimates = analysis.dimensionEstimates.map {
+                            DimensionEstimate(name: $0.name, length: $0.length, width: $0.width, height: $0.height, unit: $0.unit, thumbnail: image)
+                        }
+                    }
                     analysisResult = result
                     isAnalyzing = false
                     showResults = true

@@ -45,7 +45,7 @@ enum AppMode: String, CaseIterable, Identifiable {
         case .digitalScale:
             return digitalScaleSystemPrompt
         case .tapeMeasure:
-            return "You are a measurement expert. Estimate the dimensions (length, width, height) of the main object in the image. Use cm or m as appropriate. \(jsonFormat)"
+            return tapeMeasureSystemPrompt
         case .calorieCounter:
             return "You are a nutrition expert. Identify the food in the image and estimate total calories, protein, carbs, and fat. \(jsonFormat)"
         case .plantIdentifier:
@@ -61,7 +61,7 @@ enum AppMode: String, CaseIterable, Identifiable {
     var userPrompt: String {
         switch self {
         case .digitalScale: return digitalScaleUserPrompt
-        case .tapeMeasure: return "What are the dimensions of this object?"
+        case .tapeMeasure: return tapeMeasureUserPrompt
         case .calorieCounter: return "How many calories are in this food?"
         case .plantIdentifier: return "What plant is this?"
         case .translate: return "Translate the text in this image."
@@ -74,6 +74,26 @@ enum AppMode: String, CaseIterable, Identifiable {
     private var preferredUnits: String {
         let system = UserDefaults.standard.string(forKey: AppSettings.Keys.unitSystem) ?? AppSettings.Defaults.unitSystem
         return system == "metric" ? "grams and kilograms" : "ounces and pounds"
+    }
+
+    private var preferredDimensionUnits: String {
+        let system = UserDefaults.standard.string(forKey: AppSettings.Keys.unitSystem) ?? AppSettings.Defaults.unitSystem
+        return system == "metric" ? "centimeters (cm)" : "inches (in)"
+    }
+
+    private var tapeMeasureSystemPrompt: String {
+        """
+        You are a measurement and object identification expert. Identify ALL distinct objects in the image and estimate the typical real-world dimensions (length, width, height) of each based on what the object typically is.
+
+        Use \(preferredDimensionUnits) for all measurements. These should be typical/average dimensions for that type of object, not pixel-based measurements.
+
+        Respond ONLY with a JSON object in this exact format:
+        {"objects":[{"name":"<object name>","length":"<number>","width":"<number>","height":"<number>","unit":"<cm|in>"}],"explanation":"<detailed reasoning about how you identified the objects and determined their typical dimensions>"}
+        """
+    }
+
+    private var tapeMeasureUserPrompt: String {
+        "Identify all objects in this image and estimate the typical dimensions (length, width, height) of each one. Use \(preferredDimensionUnits)."
     }
 
     private var digitalScaleSystemPrompt: String {

@@ -37,6 +37,15 @@ struct ParsedWeightEstimate {
     let unit: String
 }
 
+/// A single object dimension estimate parsed from the Vision API.
+struct ParsedDimensionEstimate {
+    let name: String
+    let length: String
+    let width: String
+    let height: String
+    let unit: String
+}
+
 /// Structured response from the Vision API, parsed per-mode.
 struct VisionAnalysis {
     let title: String
@@ -47,6 +56,9 @@ struct VisionAnalysis {
 
     /// For Digital Scale mode: parsed individual object estimates.
     var weightEstimates: [ParsedWeightEstimate] = []
+
+    /// For Tape Measure mode: parsed individual dimension estimates.
+    var dimensionEstimates: [ParsedDimensionEstimate] = []
 }
 
 /// Shared service for analyzing images via OpenAI's Vision API.
@@ -204,6 +216,38 @@ final class VisionService {
                     explanation: explanation,
                     raw: content,
                     weightEstimates: estimates
+                )
+            }
+
+            // Tape Measure mode: parse multi-object dimension response
+            if mode == .tapeMeasure, let objects = parsed["objects"] as? [[String: Any]] {
+                let estimates = objects.compactMap { obj -> ParsedDimensionEstimate? in
+                    guard let name = obj["name"] as? String,
+                          let unit = obj["unit"] as? String else { return nil }
+
+                    func stringValue(_ key: String) -> String? {
+                        if let s = obj[key] as? String { return s }
+                        if let n = obj[key] as? NSNumber { return n.stringValue }
+                        return nil
+                    }
+
+                    guard let length = stringValue("length"),
+                          let width = stringValue("width"),
+                          let height = stringValue("height") else { return nil }
+
+                    return ParsedDimensionEstimate(name: name, length: length, width: width, height: height, unit: unit)
+                }
+
+                let explanation = parsed["explanation"] as? String ?? ""
+                let firstEstimate = estimates.first
+
+                return VisionAnalysis(
+                    title: firstEstimate?.name ?? "Tape Measure",
+                    value: firstEstimate.map { "\($0.length) × \($0.width) × \($0.height) \($0.unit)" } ?? content,
+                    detail: estimates.count > 1 ? "\(estimates.count) objects detected" : "",
+                    explanation: explanation,
+                    raw: content,
+                    dimensionEstimates: estimates
                 )
             }
 
