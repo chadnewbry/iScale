@@ -56,6 +56,13 @@ struct ParsedCalorieEstimate {
     let fat: Double
 }
 
+/// A parsed translation result from the Vision API.
+struct ParsedTranslationResult {
+    let translatedText: String
+    let sourceLanguage: String
+    let translationNotes: String
+}
+
 /// Structured response from the Vision API, parsed per-mode.
 struct VisionAnalysis {
     let title: String
@@ -72,6 +79,9 @@ struct VisionAnalysis {
 
     /// For Calorie Counter mode: parsed individual food item estimates.
     var calorieEstimates: [ParsedCalorieEstimate] = []
+
+    /// For Translate mode: parsed translation result.
+    var translationResult: ParsedTranslationResult?
 }
 
 /// Shared service for analyzing images via OpenAI's Vision API.
@@ -288,6 +298,26 @@ final class VisionService {
                     explanation: explanation,
                     raw: content,
                     calorieEstimates: estimates
+                )
+            }
+
+            // Translate mode: parse translation response
+            if mode == .translate, let translatedText = parsed["translatedText"] as? String {
+                let sourceLanguage = parsed["sourceLanguage"] as? String ?? "Unknown"
+                let notes = parsed["translationNotes"] as? String ?? ""
+                let result = ParsedTranslationResult(
+                    translatedText: translatedText,
+                    sourceLanguage: sourceLanguage,
+                    translationNotes: notes
+                )
+
+                return VisionAnalysis(
+                    title: "Translation",
+                    value: translatedText,
+                    detail: "From \(sourceLanguage)",
+                    explanation: notes,
+                    raw: content,
+                    translationResult: result
                 )
             }
 

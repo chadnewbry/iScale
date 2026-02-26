@@ -29,6 +29,8 @@ struct ResultsSheet: View {
                         tapeMeasureResults
                     } else if result.mode == .calorieCounter && !result.calorieEstimates.isEmpty {
                         calorieCounterResults
+                    } else if result.mode == .translate, let translation = result.translationResult {
+                        translateResults(translation)
                     } else {
                         genericResult
                     }
@@ -225,6 +227,51 @@ struct ResultsSheet: View {
         }
     }
 
+    // MARK: - Translate Results
+
+    private func translateResults(_ translation: TranslationResult) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Thumbnail
+            if let thumbnail = translation.thumbnail {
+                Image(uiImage: thumbnail)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 140)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+
+            // Source language badge
+            HStack(spacing: 6) {
+                Image(systemName: "globe")
+                    .font(.caption)
+                Text(translation.sourceLanguage)
+                    .font(.caption.bold())
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(AppMode.translate.color.opacity(0.15), in: Capsule())
+            .foregroundStyle(AppMode.translate.color)
+
+            // Translated text
+            Text(translation.translatedText)
+                .font(.body)
+                .textSelection(.enabled)
+
+            // Copy button
+            Button {
+                UIPasteboard.general.string = translation.translatedText
+            } label: {
+                Label("Copy Translation", systemImage: "doc.on.doc")
+                    .font(.subheadline.bold())
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(AppMode.translate.color, in: RoundedRectangle(cornerRadius: 12))
+                    .foregroundStyle(.white)
+            }
+        }
+    }
+
     // MARK: - Generic Single Result
 
     private var genericResult: some View {
@@ -271,9 +318,20 @@ struct ResultsSheet: View {
                 .font(.subheadline.bold())
                 .foregroundStyle(result.mode.color)
 
-            Text(result.aiExplanation)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            if result.mode == .translate, let translation = result.translationResult {
+                Text("Original language: \(translation.sourceLanguage)")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                if !result.aiExplanation.isEmpty {
+                    Text(result.aiExplanation)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                Text(result.aiExplanation)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
