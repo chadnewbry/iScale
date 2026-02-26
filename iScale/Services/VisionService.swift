@@ -61,6 +61,12 @@ struct ParsedTranslationResult {
     let translatedText: String
     let sourceLanguage: String
     let translationNotes: String
+/// A single plant identification parsed from the Vision API.
+struct ParsedPlantIdentification {
+    let commonName: String
+    let scientificName: String
+    let description: String
+    let confidence: String
 }
 
 /// Structured response from the Vision API, parsed per-mode.
@@ -82,6 +88,8 @@ struct VisionAnalysis {
 
     /// For Translate mode: parsed translation result.
     var translationResult: ParsedTranslationResult?
+    /// For Plant Identifier mode: parsed individual plant identifications.
+    var plantIdentifications: [ParsedPlantIdentification] = []
 }
 
 /// Shared service for analyzing images via OpenAI's Vision API.
@@ -318,6 +326,25 @@ final class VisionService {
                     explanation: notes,
                     raw: content,
                     translationResult: result
+            // Plant Identifier mode: parse multi-plant response
+            if mode == .plantIdentifier, let plants = parsed["plants"] as? [[String: Any]] {
+                let identifications = plants.compactMap { plant -> ParsedPlantIdentification? in
+                    guard let commonName = plant["commonName"] as? String,
+                          let scientificName = plant["scientificName"] as? String else { return nil }
+                    let description = plant["description"] as? String ?? ""
+                    let confidence = plant["confidence"] as? String ?? "medium"
+                    return ParsedPlantIdentification(commonName: commonName, scientificName: scientificName, description: description, confidence: confidence)
+                }
+
+                let explanation = parsed["explanation"] as? String ?? ""
+
+                return VisionAnalysis(
+                    title: identifications.first?.commonName ?? "Plant Identifier",
+                    value: identifications.first?.commonName ?? content,
+                    detail: identifications.count > 1 ? "\(identifications.count) plants detected" : identifications.first?.scientificName ?? "",
+                    explanation: explanation,
+                    raw: content,
+                    plantIdentifications: identifications
                 )
             }
 

@@ -49,7 +49,7 @@ enum AppMode: String, CaseIterable, Identifiable {
         case .calorieCounter:
             return calorieCounterSystemPrompt
         case .plantIdentifier:
-            return "You are a botanist. Identify the plant species in the image. Include common name, scientific name, and care tips. \(jsonFormat)"
+            return plantIdentifierSystemPrompt
         case .translate:
             return translateSystemPrompt
         case .objectCounter:
@@ -65,6 +65,8 @@ enum AppMode: String, CaseIterable, Identifiable {
         case .calorieCounter: return "Identify all food items in this image. For each item, estimate the portion size, calories, and macronutrients (protein, carbs, fat)."
         case .plantIdentifier: return "What plant is this?"
         case .translate: return "Extract all visible text from this image, detect the source language, and translate it to \(deviceLanguage)."
+        case .plantIdentifier: return "Identify all plants visible in this image. For each plant, provide the common name, scientific name, a brief description with care tips or interesting facts, and your confidence level."
+        case .translate: return "Translate the text in this image."
         case .objectCounter: return "How many objects are in this image?"
         }
     }
@@ -119,6 +121,12 @@ enum AppMode: String, CaseIterable, Identifiable {
 
         Respond ONLY with a JSON object in this exact format:
         {"translatedText":"<full translated text>","sourceLanguage":"<detected language name>","translationNotes":"<any notes about the translation, idioms, or context>"}
+    private var plantIdentifierSystemPrompt: String {
+        """
+        You are an expert botanist. Identify ALL distinct plant species visible in the image. For each plant, provide the common name, scientific name, a brief description with care tips or interesting facts, and your confidence level (high, medium, or low).
+
+        Respond ONLY with a JSON object in this exact format:
+        {"plants":[{"commonName":"<common name>","scientificName":"<scientific name>","description":"<brief care tips or interesting facts>","confidence":"<high|medium|low>"}],"explanation":"<detailed reasoning about how you identified each plant, referencing leaf shape, flower color, growth pattern, and other visual cues>"}
         """
     }
 

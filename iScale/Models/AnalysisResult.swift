@@ -21,6 +21,8 @@ struct AnalysisResult: Identifiable {
 
     /// For Translate mode: translation result.
     var translationResult: TranslationResult?
+    /// For Plant Identifier mode: individual plant identifications.
+    var plantIdentifications: [PlantIdentification] = []
 
     /// Total calories across all food items.
     var totalCalories: Int { calorieEstimates.reduce(0) { $0 + $1.calories } }

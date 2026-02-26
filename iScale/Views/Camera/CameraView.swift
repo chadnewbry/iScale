@@ -146,6 +146,12 @@ struct CameraView: View {
                             CalorieEstimate(name: $0.name, calories: $0.calories, protein: $0.protein, carbs: $0.carbs, fat: $0.fat, portionSize: $0.portion, thumbnail: image)
                         }
                     }
+                    // Attach plant identifications for Plant Identifier mode
+                    if currentMode == .plantIdentifier {
+                        result.plantIdentifications = analysis.plantIdentifications.map {
+                            PlantIdentification(commonName: $0.commonName, scientificName: $0.scientificName, description: $0.description, confidence: $0.confidence, thumbnail: image)
+                        }
+                    }
                     // Attach dimension estimates for Tape Measure mode
                     if currentMode == .tapeMeasure {
                         result.dimensionEstimates = analysis.dimensionEstimates.map {
