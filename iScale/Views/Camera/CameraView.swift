@@ -1,6 +1,8 @@
+import SwiftData
 import SwiftUI
 
 struct CameraView: View {
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var cameraManager = CameraManager()
     @State private var currentMode: AppMode = .digitalScale
     @State private var showModePicker = false
@@ -172,6 +174,11 @@ struct CameraView: View {
                     analysisResult = result
                     isAnalyzing = false
                     showResults = true
+
+                    // Persist scan result
+                    let record = ScanRecord.from(result)
+                    modelContext.insert(record)
+
                     AdManager.shared.showInterstitial()
                 }
             } catch {

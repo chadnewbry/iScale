@@ -30,6 +30,8 @@
 		247772E22F50C41F009217FF /* CalorieEstimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772D72F50C41F009217FF /* CalorieEstimate.swift */; };
 		247772E32F50C41F009217FF /* WeightEstimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772DD2F50C41F009217FF /* WeightEstimate.swift */; };
 		247772E42F50C41F009217FF /* AnalysisResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772D52F50C41F009217FF /* AnalysisResult.swift */; };
+		BB000000000000000000001 /* ScanRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000000000000000000011 /* ScanRecord.swift */; };
+		BB000000000000000000002 /* ScanRecord+FromResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000000000000000000012 /* ScanRecord+FromResult.swift */; };
 		247772E52F50C41F009217FF /* DimensionEstimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772D82F50C41F009217FF /* DimensionEstimate.swift */; };
 		247772E62F50C41F009217FF /* PlantIdentification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772DA2F50C41F009217FF /* PlantIdentification.swift */; };
 		247772E72F50C41F009217FF /* AppMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772D62F50C41F009217FF /* AppMode.swift */; };
@@ -61,6 +63,8 @@
 		247772C82F50C411009217FF /* ScaleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleView.swift; sourceTree = "<group>"; };
 		247772C92F50C411009217FF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		247772D52F50C41F009217FF /* AnalysisResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisResult.swift; sourceTree = "<group>"; };
+		BB000000000000000000011 /* ScanRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanRecord.swift; sourceTree = "<group>"; };
+		BB000000000000000000012 /* ScanRecord+FromResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScanRecord+FromResult.swift"; sourceTree = "<group>"; };
 		247772D62F50C41F009217FF /* AppMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMode.swift; sourceTree = "<group>"; };
 		247772D72F50C41F009217FF /* CalorieEstimate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalorieEstimate.swift; sourceTree = "<group>"; };
 		247772D82F50C41F009217FF /* DimensionEstimate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimensionEstimate.swift; sourceTree = "<group>"; };
@@ -186,6 +190,8 @@
 				247772DB2F50C41F009217FF /* SettingsManager.swift */,
 				247772DC2F50C41F009217FF /* TranslationResult.swift */,
 				247772DD2F50C41F009217FF /* WeightEstimate.swift */,
+				BB000000000000000000011 /* ScanRecord.swift */,
+				BB000000000000000000012 /* ScanRecord+FromResult.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -363,6 +369,8 @@
 				AA000000000000000000015 /* SettingsView.swift in Sources */,
 				AA000000000000000000016 /* SettingsManager.swift in Sources */,
 				AA000000000000000000017 /* StoreManager.swift in Sources */,
+				BB000000000000000000001 /* ScanRecord.swift in Sources */,
+				BB000000000000000000002 /* ScanRecord+FromResult.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
