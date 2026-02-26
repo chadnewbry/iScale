@@ -1,23 +1,50 @@
-import Foundation
+import GoogleMobileAds
+import Observation
+import UIKit
 
-/// AdMob integration manager stub.
-/// Replace with real Google Mobile Ads SDK initialization.
-final class AdManager {
+@Observable
+final class AdManager: NSObject {
     static let shared = AdManager()
 
-    // TODO: Replace with real Ad Unit IDs
-    let bannerAdUnitID = "ca-app-pub-xxxxx/xxxxx"
-    let interstitialAdUnitID = "ca-app-pub-xxxxx/xxxxx"
+    let bannerAdUnitID = "ca-app-pub-3940256099942544/2435281174"
+    let interstitialAdUnitID = "ca-app-pub-3940256099942544/4411468910"
 
-    private init() {}
+    private var interstitialAd: InterstitialAd?
+
+    private override init() {
+        super.init()
+    }
 
     /// Call from app launch to initialize the ads SDK.
     func configure() {
-        // TODO: GADMobileAds.sharedInstance().start(completionHandler: nil)
+        MobileAds.shared.start()
+        Task { await loadInterstitial() }
     }
 
-    /// Show an interstitial ad if one is loaded.
+    // MARK: - Interstitial
+
+    func loadInterstitial() async {
+        do {
+            interstitialAd = try await InterstitialAd.load(with: interstitialAdUnitID)
+        } catch {
+            print("Failed to load interstitial: \(error)")
+        }
+    }
+
+    /// Show an interstitial ad if one is loaded and user is not pro.
     func showInterstitial() {
-        // TODO: Present loaded interstitial
+        guard !StoreManager.shared.isProUser else { return }
+        guard let ad = interstitialAd else {
+            Task { await loadInterstitial() }
+            return
+        }
+
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let root = windowScene.windows.first?.rootViewController {
+            ad.present(from: root)
+        }
+
+        // Preload next one
+        Task { await loadInterstitial() }
     }
 }

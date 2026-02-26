@@ -13,6 +13,8 @@
 		AA000000000000000000014 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000004 /* Preview Assets.xcassets */; };
 		AA000000000000000000015 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000005 /* SettingsView.swift */; };
 		AA000000000000000000016 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000006 /* SettingsManager.swift */; };
+		AA000000000000000000017 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000007 /* StoreManager.swift */; };
+		AA000000000000000000018 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = AA000000000000000000091 /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,7 @@
 		AA000000000000000000004 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AA000000000000000000005 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AA000000000000000000006 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
+		AA000000000000000000007 /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
 		AA000000000000000000030 /* iScale.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iScale.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -30,6 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA000000000000000000018 /* GoogleMobileAds in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,6 +54,7 @@
 				AA000000000000000000001 /* iScaleApp.swift */,
 				AA000000000000000000022 /* Views */,
 				AA000000000000000000025 /* Models */,
+				AA000000000000000000026 /* Store */,
 				AA000000000000000000003 /* Assets.xcassets */,
 				AA000000000000000000023 /* Preview Content */,
 			);
@@ -71,6 +76,14 @@
 				AA000000000000000000006 /* SettingsManager.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		AA000000000000000000026 /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				AA000000000000000000007 /* StoreManager.swift */,
+			);
+			path = Store;
 			sourceTree = "<group>";
 		};
 		AA000000000000000000023 /* Preview Content */ = {
@@ -105,6 +118,9 @@
 			dependencies = (
 			);
 			name = iScale;
+			packageProductDependencies = (
+				AA000000000000000000091 /* GoogleMobileAds */,
+			);
 			productName = iScale;
 			productReference = AA000000000000000000030 /* iScale.app */;
 			productType = "com.apple.product-type.application";
@@ -133,6 +149,9 @@
 				Base,
 			);
 			mainGroup = AA000000000000000000020 /* root */;
+			packageReferences = (
+				AA000000000000000000090 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+			);
 			productRefGroup = AA000000000000000000024 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -163,6 +182,7 @@
 				AA000000000000000000012 /* ScaleView.swift in Sources */,
 				AA000000000000000000015 /* SettingsView.swift in Sources */,
 				AA000000000000000000016 /* SettingsManager.swift in Sources */,
+				AA000000000000000000017 /* StoreManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,6 +318,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"iScale/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iScale/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "iScale: Scale For Grams";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -327,6 +348,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"iScale/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iScale/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "iScale: Scale For Grams";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -368,6 +390,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AA000000000000000000090 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA000000000000000000091 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA000000000000000000090 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 	};
 	rootObject = AA000000000000000000080 /* Project object */;
