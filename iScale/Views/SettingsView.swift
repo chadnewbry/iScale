@@ -11,7 +11,6 @@ struct SettingsView: View {
     @State private var isPurchasing = false
     @State private var isRestoring = false
 
-    // TODO: Replace with actual URLs once deployed
     private let privacyPolicyURL = URL(string: "https://chadnewbry.github.io/iScale/privacy")!
     private let termsOfUseURL = URL(string: "https://chadnewbry.github.io/iScale/terms")!
     private let appStoreURL = URL(string: "https://apps.apple.com/app/iscale/id000000000")! // TODO: Replace with real ID
