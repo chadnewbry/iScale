@@ -67,6 +67,12 @@ struct SettingsView: View {
             .sheet(isPresented: $showShareSheet) {
                 ShareSheet(items: [appStoreURL])
             }
+            .sheet(isPresented: $showMailCompose) {
+                MailComposeView(
+                    recipients: ["chad.newbry@gmail.com"],
+                    subject: "iScale Feedback"
+                )
+            }
         }
         .preferredColorScheme(.dark)
     }
@@ -203,8 +209,9 @@ struct SettingsView: View {
     // MARK: - Actions
 
     private func sendFeedback() {
-        let email = "feedback@iscaleapp.com" // TODO: Replace with real email
-        if let url = URL(string: "mailto:\(email)?subject=iScale%20Feedback") {
+        if MFMailComposeViewController.canSendMail() {
+            showMailCompose = true
+        } else if let url = URL(string: "mailto:chad.newbry@gmail.com?subject=iScale%20Feedback") {
             UIApplication.shared.open(url)
         }
     }
@@ -231,6 +238,34 @@ struct ShareSheet: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+// MARK: - Mail Compose
+
+struct MailComposeView: UIViewControllerRepresentable {
+    @Environment(\.dismiss) private var dismiss
+    let recipients: [String]
+    let subject: String
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    func makeUIViewController(context: Context) -> MFMailComposeViewController {
+        let vc = MFMailComposeViewController()
+        vc.mailComposeDelegate = context.coordinator
+        vc.setToRecipients(recipients)
+        vc.setSubject(subject)
+        return vc
+    }
+
+    func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
+
+    class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
+        let parent: MailComposeView
+        init(_ parent: MailComposeView) { self.parent = parent }
+        func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+            parent.dismiss()
+        }
+    }
 }
 
 #Preview {
