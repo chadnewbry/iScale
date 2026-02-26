@@ -1,17 +1,19 @@
 import SwiftUI
+import GoogleMobileAds
 
-/// AdMob banner ad stub.
-/// Replace with real Google Mobile Ads SDK integration.
-struct BannerAdView: View {
-    var body: some View {
-        Rectangle()
-            .fill(Color(.systemGray6))
-            .overlay(
-                Text("Ad Space")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            )
+struct BannerAdView: UIViewRepresentable {
+    func makeUIView(context: Context) -> BannerView {
+        let banner = BannerView()
+        banner.adUnitID = AdManager.shared.bannerAdUnitID
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let root = windowScene.windows.first?.rootViewController {
+            banner.rootViewController = root
+        }
+        banner.load(Request())
+        return banner
     }
+
+    func updateUIView(_ uiView: BannerView, context: Context) {}
 }
 
 #Preview {

@@ -8,6 +8,8 @@ struct SettingsView: View {
 
     @State private var showShareSheet = false
     @State private var showMailCompose = false
+    @State private var isPurchasing = false
+    @State private var isRestoring = false
 
     // TODO: Replace with actual URLs once deployed
     private let privacyPolicyURL = URL(string: "https://chadnewbry.github.io/iScale/privacy")!
@@ -21,6 +23,8 @@ struct SettingsView: View {
 
                 ScrollView {
                     VStack(spacing: 0) {
+                        removeAdsSection
+                        Divider().overlay(Color.gray.opacity(0.3))
                         unitSystemSection
                         Divider().overlay(Color.gray.opacity(0.3))
                         settingsRow(title: "Feedback", icon: "envelope") {
@@ -65,6 +69,86 @@ struct SettingsView: View {
             }
         }
         .preferredColorScheme(.dark)
+    }
+
+    // MARK: - Remove Ads Section
+
+    private var removeAdsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if StoreManager.shared.isProUser {
+                HStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .frame(width: 28)
+                    Text("Ads Removed")
+                        .foregroundStyle(.white)
+                }
+                .font(.body)
+                .padding(.horizontal, 20)
+            } else {
+                Button {
+                    isPurchasing = true
+                    Task {
+                        do { try await StoreManager.shared.purchase() }
+                        catch { print("Purchase failed: \(error)") }
+                        await MainActor.run { isPurchasing = false }
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "xmark.circle")
+                            .foregroundStyle(.cyan)
+                            .frame(width: 28)
+                        Text("Remove Ads")
+                            .foregroundStyle(.white)
+                        Spacer()
+                        if isPurchasing {
+                            ProgressView()
+                                .tint(.cyan)
+                        } else if let product = StoreManager.shared.removeAdsProduct {
+                            Text(product.displayPrice)
+                                .foregroundStyle(.gray)
+                        }
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(.gray)
+                    }
+                    .font(.body)
+                    .padding(.horizontal, 20)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(isPurchasing)
+
+                Divider().overlay(Color.gray.opacity(0.3)).padding(.leading, 68)
+
+                Button {
+                    isRestoring = true
+                    Task {
+                        await StoreManager.shared.restorePurchases()
+                        await MainActor.run { isRestoring = false }
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "arrow.clockwise")
+                            .foregroundStyle(.cyan)
+                            .frame(width: 28)
+                        Text("Restore Purchases")
+                            .foregroundStyle(.white)
+                        Spacer()
+                        if isRestoring {
+                            ProgressView()
+                                .tint(.cyan)
+                        }
+                    }
+                    .font(.body)
+                    .padding(.horizontal, 20)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(isRestoring)
+            }
+        }
+        .padding(.vertical, 16)
     }
 
     // MARK: - Unit System Section

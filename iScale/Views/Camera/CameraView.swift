@@ -38,8 +38,10 @@ struct CameraView: View {
                     .padding(.bottom, 16)
 
                 // Ad banner
-                BannerAdView()
-                    .frame(height: 50)
+                if !StoreManager.shared.isProUser {
+                    BannerAdView()
+                        .frame(height: 50)
+                }
             }
         }
         .sheet(isPresented: $showModePicker) {
@@ -52,6 +54,9 @@ struct CameraView: View {
                     analysisResult = nil
                 }
             }
+        }
+        .onChange(of: currentMode) { _, _ in
+            AdManager.shared.showInterstitial()
         }
         .onAppear { cameraManager.start() }
         .onDisappear { cameraManager.stop() }
@@ -176,6 +181,7 @@ struct CameraView: View {
                     analysisResult = result
                     isAnalyzing = false
                     showResults = true
+                    AdManager.shared.showInterstitial()
                 }
             } catch {
                 await MainActor.run {
