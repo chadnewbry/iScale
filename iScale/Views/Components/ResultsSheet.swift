@@ -27,6 +27,8 @@ struct ResultsSheet: View {
                         digitalScaleResults
                     } else if result.mode == .tapeMeasure && !result.dimensionEstimates.isEmpty {
                         tapeMeasureResults
+                    } else if result.mode == .calorieCounter && !result.calorieEstimates.isEmpty {
+                        calorieCounterResults
                     } else {
                         genericResult
                     }
@@ -141,6 +143,85 @@ struct ResultsSheet: View {
             Text(label)
                 .fontWeight(.semibold)
             Text("\(value) \(unit)")
+        }
+    }
+
+    // MARK: - Calorie Counter Results
+
+    private var calorieCounterResults: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(result.calorieEstimates) { estimate in
+                HStack(spacing: 16) {
+                    if let thumbnail = estimate.thumbnail {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(.systemGray5))
+                            .frame(width: 56, height: 56)
+                            .overlay(
+                                Image(systemName: "flame.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.secondary)
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(estimate.name)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("\(estimate.calories) kcal")
+                            .font(.title2.bold())
+                        Text(estimate.formattedMacros)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        if !estimate.portionSize.isEmpty {
+                            Text(estimate.portionSize)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+
+                if estimate.id != result.calorieEstimates.last?.id {
+                    Divider()
+                }
+            }
+
+            // Totals row
+            if result.calorieEstimates.count > 1 {
+                Divider()
+                    .padding(.vertical, 4)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Total")
+                        .font(.subheadline.bold())
+                    Text("\(result.totalCalories) kcal")
+                        .font(.title.bold())
+                        .foregroundStyle(.red)
+                    HStack(spacing: 12) {
+                        macroLabel("Protein", value: result.totalProtein)
+                        macroLabel("Carbs", value: result.totalCarbs)
+                        macroLabel("Fat", value: result.totalFat)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private func macroLabel(_ label: String, value: Double) -> some View {
+        HStack(spacing: 2) {
+            Text(label)
+                .fontWeight(.semibold)
+            Text(String(format: value.truncatingRemainder(dividingBy: 1) == 0 ? "%.0fg" : "%.1fg", value))
         }
     }
 

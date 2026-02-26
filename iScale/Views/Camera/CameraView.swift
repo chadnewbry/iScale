@@ -140,6 +140,12 @@ struct CameraView: View {
                             WeightEstimate(name: $0.name, weight: "\($0.weight) \($0.unit)", thumbnail: image)
                         }
                     }
+                    // Attach calorie estimates for Calorie Counter mode
+                    if currentMode == .calorieCounter {
+                        result.calorieEstimates = analysis.calorieEstimates.map {
+                            CalorieEstimate(name: $0.name, calories: $0.calories, protein: $0.protein, carbs: $0.carbs, fat: $0.fat, portionSize: $0.portion, thumbnail: image)
+                        }
+                    }
                     // Attach dimension estimates for Tape Measure mode
                     if currentMode == .tapeMeasure {
                         result.dimensionEstimates = analysis.dimensionEstimates.map {

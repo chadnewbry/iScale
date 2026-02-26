@@ -47,7 +47,7 @@ enum AppMode: String, CaseIterable, Identifiable {
         case .tapeMeasure:
             return tapeMeasureSystemPrompt
         case .calorieCounter:
-            return "You are a nutrition expert. Identify the food in the image and estimate total calories, protein, carbs, and fat. \(jsonFormat)"
+            return calorieCounterSystemPrompt
         case .plantIdentifier:
             return "You are a botanist. Identify the plant species in the image. Include common name, scientific name, and care tips. \(jsonFormat)"
         case .translate:
@@ -62,7 +62,7 @@ enum AppMode: String, CaseIterable, Identifiable {
         switch self {
         case .digitalScale: return digitalScaleUserPrompt
         case .tapeMeasure: return tapeMeasureUserPrompt
-        case .calorieCounter: return "How many calories are in this food?"
+        case .calorieCounter: return "Identify all food items in this image. For each item, estimate the portion size, calories, and macronutrients (protein, carbs, fat)."
         case .plantIdentifier: return "What plant is this?"
         case .translate: return "Translate the text in this image."
         case .objectCounter: return "How many objects are in this image?"
@@ -94,6 +94,17 @@ enum AppMode: String, CaseIterable, Identifiable {
 
     private var tapeMeasureUserPrompt: String {
         "Identify all objects in this image and estimate the typical dimensions (length, width, height) of each one. Use \(preferredDimensionUnits)."
+    }
+
+    private var calorieCounterSystemPrompt: String {
+        """
+        You are a nutrition expert. Identify ALL distinct food items in the image. For each item, estimate the portion size and provide calorie count and macronutrient breakdown (protein, carbs, fat in grams).
+
+        Be specific about portion sizes (e.g. "1 medium banana ~120g", "2 slices white bread ~60g").
+
+        Respond ONLY with a JSON object in this exact format:
+        {"items":[{"name":"<food item name>","portion":"<estimated portion size>","calories":<number>,"protein":<number>,"carbs":<number>,"fat":<number>}],"explanation":"<detailed reasoning about how you identified the food items and estimated portion sizes, referencing visual cues like plate size, utensil comparison, food density, and typical serving sizes>"}
+        """
     }
 
     private var digitalScaleSystemPrompt: String {

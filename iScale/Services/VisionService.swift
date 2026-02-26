@@ -46,6 +46,16 @@ struct ParsedDimensionEstimate {
     let unit: String
 }
 
+/// A single food item calorie estimate parsed from the Vision API.
+struct ParsedCalorieEstimate {
+    let name: String
+    let portion: String
+    let calories: Int
+    let protein: Double
+    let carbs: Double
+    let fat: Double
+}
+
 /// Structured response from the Vision API, parsed per-mode.
 struct VisionAnalysis {
     let title: String
@@ -59,6 +69,9 @@ struct VisionAnalysis {
 
     /// For Tape Measure mode: parsed individual dimension estimates.
     var dimensionEstimates: [ParsedDimensionEstimate] = []
+
+    /// For Calorie Counter mode: parsed individual food item estimates.
+    var calorieEstimates: [ParsedCalorieEstimate] = []
 }
 
 /// Shared service for analyzing images via OpenAI's Vision API.
@@ -150,7 +163,7 @@ final class VisionService {
     private func buildRequestBody(base64: String, mode: AppMode) -> [String: Any] {
         [
             "model": model,
-            "max_tokens": 500,
+            "max_tokens": 800,
             "messages": [
                 [
                     "role": "system",
@@ -248,6 +261,33 @@ final class VisionService {
                     explanation: explanation,
                     raw: content,
                     dimensionEstimates: estimates
+                )
+            }
+
+            // Calorie Counter mode: parse multi-item food response
+            if mode == .calorieCounter, let items = parsed["items"] as? [[String: Any]] {
+                let estimates = items.compactMap { item -> ParsedCalorieEstimate? in
+                    guard let name = item["name"] as? String else { return nil }
+
+                    let portion = item["portion"] as? String ?? ""
+                    let calories = (item["calories"] as? NSNumber)?.intValue ?? 0
+                    let protein = (item["protein"] as? NSNumber)?.doubleValue ?? 0
+                    let carbs = (item["carbs"] as? NSNumber)?.doubleValue ?? 0
+                    let fat = (item["fat"] as? NSNumber)?.doubleValue ?? 0
+
+                    return ParsedCalorieEstimate(name: name, portion: portion, calories: calories, protein: protein, carbs: carbs, fat: fat)
+                }
+
+                let totalCal = estimates.reduce(0) { $0 + $1.calories }
+                let explanation = parsed["explanation"] as? String ?? ""
+
+                return VisionAnalysis(
+                    title: estimates.first?.name ?? "Calorie Counter",
+                    value: "\(totalCal) kcal",
+                    detail: estimates.count > 1 ? "\(estimates.count) food items detected" : estimates.first?.portion ?? "",
+                    explanation: explanation,
+                    raw: content,
+                    calorieEstimates: estimates
                 )
             }
 
