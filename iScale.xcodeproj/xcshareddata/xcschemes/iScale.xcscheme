@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AA000000000000000000040"
-               BuildableName = "iScale.app"
-               BlueprintName = "iScale"
+               BuildableName = "iScale - AI Scale.app"
+               BlueprintName = "iScale - AI Scale"
                ReferencedContainer = "container:iScale.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,8 +45,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "AA000000000000000000040"
-            BuildableName = "iScale.app"
-            BlueprintName = "iScale"
+            BuildableName = "iScale - AI Scale.app"
+            BlueprintName = "iScale - AI Scale"
             ReferencedContainer = "container:iScale.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -62,8 +62,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "AA000000000000000000040"
-            BuildableName = "iScale.app"
-            BlueprintName = "iScale"
+            BuildableName = "iScale - AI Scale.app"
+            BlueprintName = "iScale - AI Scale"
             ReferencedContainer = "container:iScale.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
