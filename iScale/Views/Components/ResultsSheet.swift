@@ -29,6 +29,8 @@ struct ResultsSheet: View {
                         tapeMeasureResults
                     } else if result.mode == .calorieCounter && !result.calorieEstimates.isEmpty {
                         calorieCounterResults
+                    } else if result.mode == .plantIdentifier && !result.plantIdentifications.isEmpty {
+                        plantIdentifierResults
                     } else {
                         genericResult
                     }
@@ -222,6 +224,79 @@ struct ResultsSheet: View {
             Text(label)
                 .fontWeight(.semibold)
             Text(String(format: value.truncatingRemainder(dividingBy: 1) == 0 ? "%.0fg" : "%.1fg", value))
+        }
+    }
+
+    // MARK: - Plant Identifier Results
+
+    private var plantIdentifierResults: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(result.plantIdentifications) { plant in
+                HStack(alignment: .top, spacing: 16) {
+                    if let thumbnail = plant.thumbnail {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(.systemGray5))
+                            .frame(width: 56, height: 56)
+                            .overlay(
+                                Image(systemName: "leaf.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.green)
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(plant.commonName)
+                            .font(.title3.bold())
+                        Text(plant.scientificName)
+                            .font(.subheadline)
+                            .italic()
+                            .foregroundStyle(.secondary)
+                        Text(plant.description)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        // Confidence badge
+                        HStack(spacing: 4) {
+                            Image(systemName: confidenceIcon(plant.confidence))
+                                .font(.caption2)
+                            Text("Confidence: \(plant.confidence.capitalized)")
+                                .font(.caption2)
+                        }
+                        .foregroundStyle(confidenceColor(plant.confidence))
+                        .padding(.top, 2)
+                    }
+
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+
+                if plant.id != result.plantIdentifications.last?.id {
+                    Divider()
+                }
+            }
+        }
+    }
+
+    private func confidenceIcon(_ confidence: String) -> String {
+        switch confidence.lowercased() {
+        case "high": return "checkmark.seal.fill"
+        case "medium": return "checkmark.seal"
+        default: return "questionmark.circle"
+        }
+    }
+
+    private func confidenceColor(_ confidence: String) -> Color {
+        switch confidence.lowercased() {
+        case "high": return .green
+        case "medium": return .orange
+        default: return .red
         }
     }
 
