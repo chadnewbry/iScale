@@ -1,0 +1,458 @@
+import SwiftUI
+
+/// Reusable mode-specific results content, shared between ResultsSheet and AnalysisView.
+struct ResultsContentView: View {
+    let result: AnalysisResult
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            if result.mode == .digitalScale && !result.weightEstimates.isEmpty {
+                digitalScaleResults
+            } else if result.mode == .tapeMeasure && !result.dimensionEstimates.isEmpty {
+                tapeMeasureResults
+            } else if result.mode == .calorieCounter && !result.calorieEstimates.isEmpty {
+                calorieCounterResults
+            } else if result.mode == .translate, let translation = result.translationResult {
+                translateResults(translation)
+            } else if result.mode == .plantIdentifier && !result.plantIdentifications.isEmpty {
+                plantIdentifierResults
+            } else if result.mode == .objectCounter && !result.objectCounts.isEmpty {
+                objectCounterResults
+            } else {
+                genericResult
+            }
+
+            // AI explanation
+            if !result.aiExplanation.isEmpty {
+                analyzeSection
+            }
+        }
+    }
+
+    // MARK: - Digital Scale Multi-Object Results
+
+    private var digitalScaleResults: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(result.weightEstimates) { estimate in
+                HStack(spacing: 16) {
+                    if let thumbnail = estimate.thumbnail {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(.systemGray5))
+                            .frame(width: 56, height: 56)
+                            .overlay(
+                                Image(systemName: "scalemass.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.secondary)
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(estimate.name)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text(estimate.weight)
+                            .font(.title2.bold())
+                    }
+
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+
+                if estimate.id != result.weightEstimates.last?.id {
+                    Divider()
+                }
+            }
+        }
+    }
+
+    // MARK: - Tape Measure Multi-Object Results
+
+    private var tapeMeasureResults: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(result.dimensionEstimates) { estimate in
+                HStack(spacing: 16) {
+                    if let thumbnail = estimate.thumbnail {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(.systemGray5))
+                            .frame(width: 56, height: 56)
+                            .overlay(
+                                Image(systemName: "ruler.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.secondary)
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(estimate.name)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text(estimate.formattedDimensions)
+                            .font(.title3.bold())
+                        HStack(spacing: 12) {
+                            dimensionLabel("L", value: estimate.length, unit: estimate.unit)
+                            dimensionLabel("W", value: estimate.width, unit: estimate.unit)
+                            dimensionLabel("H", value: estimate.height, unit: estimate.unit)
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+
+                if estimate.id != result.dimensionEstimates.last?.id {
+                    Divider()
+                }
+            }
+        }
+    }
+
+    private func dimensionLabel(_ label: String, value: String, unit: String) -> some View {
+        HStack(spacing: 2) {
+            Text(label)
+                .fontWeight(.semibold)
+            Text("\(value) \(unit)")
+        }
+    }
+
+    // MARK: - Calorie Counter Results
+
+    private var calorieCounterResults: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(result.calorieEstimates) { estimate in
+                HStack(spacing: 16) {
+                    if let thumbnail = estimate.thumbnail {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(.systemGray5))
+                            .frame(width: 56, height: 56)
+                            .overlay(
+                                Image(systemName: "flame.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.secondary)
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(estimate.name)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("\(estimate.calories) kcal")
+                            .font(.title2.bold())
+                        Text(estimate.formattedMacros)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        if !estimate.portionSize.isEmpty {
+                            Text(estimate.portionSize)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+
+                if estimate.id != result.calorieEstimates.last?.id {
+                    Divider()
+                }
+            }
+
+            // Totals row
+            if result.calorieEstimates.count > 1 {
+                Divider()
+                    .padding(.vertical, 4)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Total")
+                        .font(.subheadline.bold())
+                    Text("\(result.totalCalories) kcal")
+                        .font(.title.bold())
+                        .foregroundStyle(.red)
+                    HStack(spacing: 12) {
+                        macroLabel("Protein", value: result.totalProtein)
+                        macroLabel("Carbs", value: result.totalCarbs)
+                        macroLabel("Fat", value: result.totalFat)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private func macroLabel(_ label: String, value: Double) -> some View {
+        HStack(spacing: 2) {
+            Text(label)
+                .fontWeight(.semibold)
+            Text(String(format: value.truncatingRemainder(dividingBy: 1) == 0 ? "%.0fg" : "%.1fg", value))
+        }
+    }
+
+    // MARK: - Translate Results
+
+    private func translateResults(_ translation: TranslationResult) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Thumbnail
+            if let thumbnail = translation.thumbnail {
+                Image(uiImage: thumbnail)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 140)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+
+            // Source language badge
+            HStack(spacing: 6) {
+                Image(systemName: "globe")
+                    .font(.caption)
+                Text(translation.sourceLanguage)
+                    .font(.caption.bold())
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(AppMode.translate.color.opacity(0.15), in: Capsule())
+            .foregroundStyle(AppMode.translate.color)
+
+            // Translated text
+            Text(translation.translatedText)
+                .font(.body)
+                .textSelection(.enabled)
+
+            // Copy button
+            Button {
+                UIPasteboard.general.string = translation.translatedText
+            } label: {
+                Label("Copy Translation", systemImage: "doc.on.doc")
+                    .font(.subheadline.bold())
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(AppMode.translate.color, in: RoundedRectangle(cornerRadius: 12))
+                    .foregroundStyle(.white)
+            }
+        }
+    }
+
+    // MARK: - Plant Identifier Results
+
+    private var plantIdentifierResults: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(result.plantIdentifications) { plant in
+                HStack(alignment: .top, spacing: 16) {
+                    if let thumbnail = plant.thumbnail {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(.systemGray5))
+                            .frame(width: 56, height: 56)
+                            .overlay(
+                                Image(systemName: "leaf.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.green)
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(plant.commonName)
+                            .font(.title3.bold())
+                        Text(plant.scientificName)
+                            .font(.subheadline)
+                            .italic()
+                            .foregroundStyle(.secondary)
+                        Text(plant.description)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        // Confidence badge
+                        HStack(spacing: 4) {
+                            Image(systemName: confidenceIcon(plant.confidence))
+                                .font(.caption2)
+                            Text("Confidence: \(plant.confidence.capitalized)")
+                                .font(.caption2)
+                        }
+                        .foregroundStyle(confidenceColor(plant.confidence))
+                        .padding(.top, 2)
+                    }
+
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+
+                if plant.id != result.plantIdentifications.last?.id {
+                    Divider()
+                }
+            }
+        }
+    }
+
+    private func confidenceIcon(_ confidence: String) -> String {
+        switch confidence.lowercased() {
+        case "high": return "checkmark.seal.fill"
+        case "medium": return "checkmark.seal"
+        default: return "questionmark.circle"
+        }
+    }
+
+    private func confidenceColor(_ confidence: String) -> Color {
+        switch confidence.lowercased() {
+        case "high": return .green
+        case "medium": return .orange
+        default: return .red
+        }
+    }
+
+    // MARK: - Object Counter Results
+
+    private var objectCounterResults: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(result.objectCounts) { object in
+                HStack(spacing: 16) {
+                    if let thumbnail = object.thumbnail {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(.systemGray5))
+                            .frame(width: 56, height: 56)
+                            .overlay(
+                                Image(systemName: "number.square.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.purple)
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(object.name)
+                            .font(.title3.bold())
+                        HStack(spacing: 8) {
+                            Text("\u{00D7}\(object.count)")
+                                .font(.title2.bold())
+                                .foregroundStyle(.purple)
+                            Text(object.category)
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Color.purple.opacity(0.12), in: Capsule())
+                                .foregroundStyle(.purple)
+                        }
+                    }
+
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+
+                if object.id != result.objectCounts.last?.id {
+                    Divider()
+                }
+            }
+
+            // Total count row
+            if result.objectCounts.count >= 1 {
+                Divider()
+                    .padding(.vertical, 4)
+
+                HStack {
+                    Text("Total Objects")
+                        .font(.subheadline.bold())
+                    Spacer()
+                    Text("\(result.totalObjectCount)")
+                        .font(.title.bold())
+                        .foregroundStyle(.purple)
+                }
+            }
+        }
+    }
+
+    // MARK: - Generic Single Result
+
+    private var genericResult: some View {
+        HStack(spacing: 16) {
+            if let thumbnail = result.thumbnail {
+                Image(uiImage: thumbnail)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 72, height: 72)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            } else {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(.systemGray5))
+                    .frame(width: 72, height: 72)
+                    .overlay(
+                        Image(systemName: result.mode.icon)
+                            .font(.title2)
+                            .foregroundStyle(.secondary)
+                    )
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(result.title)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Text(result.value)
+                    .font(.title.bold())
+                if !result.detail.isEmpty {
+                    Text(result.detail)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer()
+        }
+    }
+
+    // MARK: - Analyze Section
+
+    private var analyzeSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Analyze", systemImage: "sparkles")
+                .font(.subheadline.bold())
+                .foregroundStyle(result.mode.color)
+
+            if result.mode == .translate, let translation = result.translationResult {
+                Text("Original language: \(translation.sourceLanguage)")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                if !result.aiExplanation.isEmpty {
+                    Text(result.aiExplanation)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                Text(result.aiExplanation)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: 12))
+    }
+}
