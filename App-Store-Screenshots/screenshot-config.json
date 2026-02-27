@@ -1,0 +1,72 @@
+{
+  "devices": [
+    {
+      "bezelWidthFraction": 0.016,
+      "deviceWidthFraction": 0.75,
+      "frameCornerRadiusFraction": 0.13,
+      "name": "iPhone 6.5",
+      "outputDirectory": "iPhone 6.5",
+      "outputHeight": 2688,
+      "outputWidth": 1242,
+      "screenAspectRatio": 2.1643
+    },
+    {
+      "bezelWidthFraction": 0.008,
+      "deviceWidthFraction": 0.82,
+      "frameCornerRadiusFraction": 0.045,
+      "name": "iPad 13",
+      "outputDirectory": "iPad 13",
+      "outputHeight": 2752,
+      "outputWidth": 2064,
+      "screenAspectRatio": 1.3333
+    }
+  ],
+  "locale": "en-US",
+  "outputDirectory": "App-Store-Screenshots",
+  "screenshotCount": 5,
+  "screenshots": [
+    {
+      "header": "📷 Point & Weigh",
+      "screenshotPath": "01.png",
+      "subtitle": "Estimate weight with just your camera"
+    },
+    {
+      "header": "🤖 AI-Powered Analysis",
+      "screenshotPath": "02.png",
+      "subtitle": "Advanced vision AI identifies and weighs objects"
+    },
+    {
+      "header": "⚖️ Instant Results",
+      "screenshotPath": "03.png",
+      "subtitle": "Get accurate weight estimates in seconds"
+    },
+    {
+      "header": "📊 Track Your History",
+      "screenshotPath": "04.png",
+      "subtitle": "Keep a log of all your measurements"
+    },
+    {
+      "header": "⚙️ Your Preferences",
+      "screenshotPath": "05.png",
+      "subtitle": "Switch between metric and imperial units"
+    }
+  ],
+  "screenshotsDirectory": "App-Store-Screenshots/inputs",
+  "theme": {
+    "deviceFrameColor": "#1C1C1E",
+    "gradientBottomColor": "#1A1A2E",
+    "gradientTopColor": "#16213E",
+    "headerFontSizeFraction": 0.038,
+    "pillColor": "#FFFFFF",
+    "pillCornerRadiusFraction": 0.5,
+    "pillSubtitleGapFraction": 0.007,
+    "pillTextColor": "#1A1A2E",
+    "shadowBlur": 30,
+    "shadowOpacity": 0.3,
+    "subtitleColor": "#E0E0E0",
+    "subtitleDeviceGapFraction": 0.028,
+    "subtitleFontSizeFraction": 0.035,
+    "subtitleMaxWidthFraction": 0.85,
+    "topPaddingFraction": 0.049
+  }
+}
