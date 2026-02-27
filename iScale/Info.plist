@@ -9,7 +9,7 @@
 	<key>NSUserTrackingUsageDescription</key>
 	<string>This allows iScale to show you more relevant ads and helps support the app.</string>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-7547154525975037~8379803726</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

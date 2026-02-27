@@ -8,9 +8,8 @@ final class AdManager: NSObject {
     static let shared = AdManager()
 
     // MARK: - Ad Unit IDs
-    // TODO: Replace with production ad unit IDs from AdMob dashboard before release
-    let bannerAdUnitID = "ca-app-pub-3940256099942544/2435281174"
-    let interstitialAdUnitID = "ca-app-pub-3940256099942544/4411468910"
+    let bannerAdUnitID = "ca-app-pub-7547154525975037/6739418996"
+    let interstitialAdUnitID = "ca-app-pub-7547154525975037/1191074264"
 
     private var interstitialAd: GADInterstitialAd?
 
