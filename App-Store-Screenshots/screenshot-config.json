@@ -56,17 +56,17 @@
     "deviceFrameColor": "#1C1C1E",
     "gradientBottomColor": "#1A1A2E",
     "gradientTopColor": "#16213E",
-    "headerFontSizeFraction": 0.038,
+    "headerFontSizeFraction": 0.053,
     "pillColor": "#FFFFFF",
-    "pillCornerRadiusFraction": 0.5,
-    "pillSubtitleGapFraction": 0.007,
+    "pillCornerRadiusFraction": 0.16,
+    "pillSubtitleGapFraction": 0.035,
     "pillTextColor": "#1A1A2E",
     "shadowBlur": 30,
     "shadowOpacity": 0.3,
     "subtitleColor": "#E0E0E0",
-    "subtitleDeviceGapFraction": 0.028,
-    "subtitleFontSizeFraction": 0.035,
+    "subtitleDeviceGapFraction": 0.08,
+    "subtitleFontSizeFraction": 0.066,
     "subtitleMaxWidthFraction": 0.85,
-    "topPaddingFraction": 0.049
+    "topPaddingFraction": 0.07
   }
 }
