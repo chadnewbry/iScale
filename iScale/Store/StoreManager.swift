@@ -32,7 +32,7 @@ final class StoreManager {
                 removeAdsProduct = products.first
             }
         } catch {
-            print("Failed to load products: \(error)")
+            // Product load failed; will retry later
         }
     }
 

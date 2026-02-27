@@ -13,7 +13,7 @@ struct SettingsView: View {
 
     private let privacyPolicyURL = URL(string: "https://chadnewbry.github.io/iScale/privacy")!
     private let termsOfUseURL = URL(string: "https://chadnewbry.github.io/iScale/terms")!
-    private let appStoreURL = URL(string: "https://apps.apple.com/app/iscale/id000000000")! // TODO: Replace with real ID
+    private let appStoreURL = URL(string: "https://chadnewbry.github.io/iScale/")!
 
     var body: some View {
         NavigationStack {
@@ -95,7 +95,7 @@ struct SettingsView: View {
                     isPurchasing = true
                     Task {
                         do { try await StoreManager.shared.purchase() }
-                        catch { print("Purchase failed: \(error)") }
+                        catch { /* Purchase failed or cancelled */ }
                         await MainActor.run { isPurchasing = false }
                     }
                 } label: {
