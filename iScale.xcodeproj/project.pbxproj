@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		247772AC2F50C3E3009217FF /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772AA2F50C3E3009217FF /* AppSettings.swift */; };
 		247772B02F50C3ED009217FF /* VisionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772AE2F50C3ED009217FF /* VisionService.swift */; };
-		247772B12F50C3ED009217FF /* APIKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772AD2F50C3ED009217FF /* APIKeyStore.swift */; };
 		247772B52F50C3F8009217FF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772B22F50C3F8009217FF /* ContentView.swift */; };
 		247772B62F50C3F8009217FF /* iScaleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772B32F50C3F8009217FF /* iScaleApp.swift */; };
 		247772BA2F50C403009217FF /* BannerAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247772B82F50C403009217FF /* BannerAdView.swift */; };
@@ -46,7 +45,6 @@
 
 /* Begin PBXFileReference section */
 		247772AA2F50C3E3009217FF /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
-		247772AD2F50C3ED009217FF /* APIKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeyStore.swift; sourceTree = "<group>"; };
 		247772AE2F50C3ED009217FF /* VisionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionService.swift; sourceTree = "<group>"; };
 		247772B22F50C3F8009217FF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		247772B32F50C3F8009217FF /* iScaleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iScaleApp.swift; sourceTree = "<group>"; };
@@ -105,7 +103,6 @@
 		247772AF2F50C3ED009217FF /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				247772AD2F50C3ED009217FF /* APIKeyStore.swift */,
 				247772AE2F50C3ED009217FF /* VisionService.swift */,
 			);
 			path = Services;
@@ -365,7 +362,6 @@
 				247772B02F50C3ED009217FF /* VisionService.swift in Sources */,
 				247772B52F50C3F8009217FF /* ContentView.swift in Sources */,
 				247772B62F50C3F8009217FF /* iScaleApp.swift in Sources */,
-				247772B12F50C3ED009217FF /* APIKeyStore.swift in Sources */,
 				AA000000000000000000015 /* SettingsView.swift in Sources */,
 				AA000000000000000000016 /* SettingsManager.swift in Sources */,
 				AA000000000000000000017 /* StoreManager.swift in Sources */,

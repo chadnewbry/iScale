@@ -119,7 +119,7 @@ struct CameraView: View {
         isAnalyzing = true
 
         Task {
-            let image = cameraManager.capturePhoto()
+            let image = await cameraManager.capturePhoto()
 
             do {
                 let analysis = try await VisionService.shared.analyze(image: image, mode: currentMode)

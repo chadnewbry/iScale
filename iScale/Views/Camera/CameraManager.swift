@@ -2,13 +2,15 @@ import AVFoundation
 import UIKit
 
 @MainActor
-final class CameraManager: ObservableObject {
+final class CameraManager: NSObject, ObservableObject {
     let session = AVCaptureSession()
     private var photoOutput = AVCapturePhotoOutput()
     private var isConfigured = false
     private var device: AVCaptureDevice?
 
     @Published var isFlashOn = false
+
+    private var photoContinuation: CheckedContinuation<UIImage?, Never>?
 
     func start() {
         guard !isConfigured else {
@@ -34,10 +36,20 @@ final class CameraManager: ObservableObject {
         device.unlockForConfiguration()
     }
 
-    func capturePhoto() -> UIImage? {
-        // TODO: Implement actual photo capture via AVCapturePhotoCaptureDelegate
-        // For now, return nil (stub)
-        return nil
+    /// Capture a photo asynchronously and return the resulting UIImage.
+    func capturePhoto() async -> UIImage? {
+        guard isConfigured else { return nil }
+
+        return await withCheckedContinuation { continuation in
+            self.photoContinuation = continuation
+            let settings = AVCapturePhotoSettings()
+            if let device, device.hasTorch, isFlashOn {
+                settings.flashMode = .on
+            } else {
+                settings.flashMode = .off
+            }
+            photoOutput.capturePhoto(with: settings, delegate: self)
+        }
     }
 
     private func configure() {
@@ -63,6 +75,24 @@ final class CameraManager: ObservableObject {
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             self?.session.startRunning()
+        }
+    }
+}
+
+// MARK: - AVCapturePhotoCaptureDelegate
+
+extension CameraManager: AVCapturePhotoCaptureDelegate {
+    nonisolated func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        let image: UIImage?
+        if let data = photo.fileDataRepresentation() {
+            image = UIImage(data: data)
+        } else {
+            image = nil
+        }
+
+        Task { @MainActor in
+            self.photoContinuation?.resume(returning: image)
+            self.photoContinuation = nil
         }
     }
 }

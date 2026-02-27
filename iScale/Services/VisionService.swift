@@ -2,7 +2,6 @@ import UIKit
 
 /// Errors that can occur during vision analysis.
 enum VisionServiceError: LocalizedError {
-    case noAPIKey
     case imageConversionFailed
     case networkError(Error)
     case rateLimited(retryAfter: Int?)
@@ -11,8 +10,6 @@ enum VisionServiceError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noAPIKey:
-            return "OpenAI API key not configured. Please add your API key in Settings."
         case .imageConversionFailed:
             return "Failed to process the image. Please try again."
         case .networkError:
@@ -109,7 +106,7 @@ final class VisionService {
     static let shared = VisionService()
 
     private let session: URLSession
-    private let endpoint = URL(string: "https://api.openai.com/v1/chat/completions")!
+    private let endpoint = URL(string: "https://realidcheck-proxy.chadnewbry.workers.dev")!
     private let model = "gpt-4o-mini"
 
     private init() {
@@ -136,10 +133,6 @@ final class VisionService {
 
     /// Full structured analysis — use this when you need all fields.
     func analyze(image: UIImage?, mode: AppMode) async throws -> VisionAnalysis {
-        guard let apiKey = APIKeyStore.openAIKey, !apiKey.isEmpty else {
-            throw VisionServiceError.noAPIKey
-        }
-
         guard let image, let base64 = imageToBase64(image) else {
             throw VisionServiceError.imageConversionFailed
         }
@@ -147,7 +140,6 @@ final class VisionService {
         let body = buildRequestBody(base64: base64, mode: mode)
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 

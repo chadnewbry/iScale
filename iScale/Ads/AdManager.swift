@@ -30,7 +30,7 @@ final class AdManager: NSObject {
         // ATT must be requested after the app becomes active and the UI is visible.
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             ATTrackingManager.requestTrackingAuthorization { status in
-                print("ATT status: \(status.rawValue)")
+                // ATT status received
             }
         }
     }
@@ -41,7 +41,7 @@ final class AdManager: NSObject {
         do {
             interstitialAd = try await GADInterstitialAd.load(withAdUnitID: interstitialAdUnitID, request: GADRequest())
         } catch {
-            print("Failed to load interstitial: \(error)")
+            // Interstitial load failed; will retry on next request
         }
     }
 
