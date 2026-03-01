@@ -26,34 +26,34 @@
   "screenshotCount": 6,
   "screenshots": [
     {
-      "header": "⚖️ Digital scale",
+      "header": "📱 Digital scale",
       "screenshotPath": "01.png",
       "subtitle": "Weigh anything using AI"
     },
     {
-      "header": "🔥 Calorie counter",
+      "header": "🍎 Calorie counter",
       "screenshotPath": "02.png",
       "subtitle": "Estimate calories using AI"
     },
     {
       "header": "🌿 Plant identifier",
       "screenshotPath": "03.png",
-      "subtitle": "Identify any plant using AI"
+      "subtitle": "Identify plants using AI"
     },
     {
-      "header": "🌐 Translate",
+      "header": "🌍 Instant translator",
       "screenshotPath": "04.png",
-      "subtitle": "Translate any text using AI"
+      "subtitle": "Translate text using AI"
     },
     {
       "header": "🔢 Object counter",
       "screenshotPath": "05.png",
-      "subtitle": "Count any object using AI"
+      "subtitle": "Count objects using AI"
     },
     {
-      "header": "📐 Tape measure",
+      "header": "📏 Tape measure",
       "screenshotPath": "06.png",
-      "subtitle": "Measure anything using AI"
+      "subtitle": "Measure dimensions using AI"
     }
   ],
   "screenshotsDirectory": "App-Store-Screenshots/inputs",
